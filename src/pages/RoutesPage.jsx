@@ -1,24 +1,26 @@
 import React from 'react';
-import { useBuses } from '../hooks/useBuses';
 import { Map, MapPin } from 'lucide-react';
+import { useBuses } from '../hooks/useBuses';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function RoutesPage() {
+  const { t } = useLanguage();
   const { routes, loading, error } = useBuses();
 
   if (loading) {
-    return <div className="max-w-7xl mx-auto px-4 py-20 text-center text-gray-500 font-medium">Loading routes...</div>;
+    return <div className="max-w-7xl mx-auto px-4 py-20 text-center text-gray-500 font-medium">{t('loadingRoutes')}</div>;
   }
 
   if (error) {
-    return <div className="max-w-7xl mx-auto px-4 py-20 text-center text-red-500 font-medium">Error loading routes: {error}</div>;
+    return <div className="max-w-7xl mx-auto px-4 py-20 text-center text-red-500 font-medium">{t('errorLoadingRoutes')}: {error}</div>;
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-10 text-center">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">City Transit Routes</h1>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">{t('routesPageTitle')}</h1>
         <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-          Explore all active bus routes and their designated stops.
+          {t('routesPageSubtitle')}
         </p>
       </div>
 
@@ -38,7 +40,7 @@ export default function RoutesPage() {
             </div>
 
             <div className="flex-grow">
-              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider">Stops</h3>
+              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider">{t('stopsLabel')}</h3>
               <ul className="space-y-3 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
                 {route.stops.map((stop, idx) => (
                   <li key={idx} className="relative flex items-center gap-3">

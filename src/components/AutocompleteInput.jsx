@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function AutocompleteInput({ value, onChange, placeholder, label, icon }) {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +82,7 @@ export default function AutocompleteInput({ value, onChange, placeholder, label,
             <ul className="py-2">
               {isLoading && suggestions.length === 0 && (
                  <li className="px-4 py-2.5 text-sm text-gray-500 text-center flex justify-center items-center gap-2">
-                   <Loader2 className="h-4 w-4 animate-spin text-red-500" /> Searching India...
+                   <Loader2 className="h-4 w-4 animate-spin text-red-500" /> {t('searchingIndia')}
                  </li>
               )}
               {suggestions.map((option, index) => (

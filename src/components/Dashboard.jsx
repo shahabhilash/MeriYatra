@@ -4,8 +4,10 @@ import LiveMap from './LiveMap';
 import AutocompleteInput from './AutocompleteInput';
 import { Route, MapPin } from 'lucide-react';
 import { useBuses } from '../hooks/useBuses';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Dashboard() {
+  const { t } = useLanguage();
   const { buses, routes, loading, error } = useBuses();
   const [fromStop, setFromStop] = useState('');
   const [toStop, setToStop] = useState('');
@@ -34,10 +36,10 @@ export default function Dashboard() {
       {/* Hero Section */}
       <div className="text-center py-12 lg:py-20">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
-          Track Your <span className="text-red-600">Ride</span> Hassle-Free
+          {t('dashHeroTitle1')} <span className="text-red-600">{t('dashHeroTitle2')}</span> {t('dashHeroTitle3')}
         </h1>
         <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 mb-10">
-          Live tracking for buses, autos, and cabs on your daily commute. Simple, reliable, and free to use.
+          {t('dashHeroSubtitle')}
         </p>
         
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-2xl mx-auto">
@@ -45,11 +47,11 @@ export default function Dashboard() {
             type="text" 
             value={rtoNumber}
             onChange={(e) => setRtoNumber(e.target.value.toUpperCase())}
-            placeholder="Enter RTO No. (e.g. MH01...)" 
+            placeholder={t('dashRtoPlaceholder')} 
             className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium text-lg border border-gray-300 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all uppercase bg-white text-gray-900 shadow-sm"
           />
           <button className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-3.5 rounded-xl font-bold text-lg transition-all shadow-lg shadow-red-200 shrink-0">
-            Find My Ride
+            {t('dashFindRideBtn')}
           </button>
         </div>
 
@@ -58,8 +60,8 @@ export default function Dashboard() {
           <AutocompleteInput 
             value={fromStop}
             onChange={setFromStop}
-            placeholder="Type Pickup Location..."
-            label="From"
+            placeholder={t('dashPickupPlaceholder')}
+            label={t('dashFrom')}
             icon={
               <div className="bg-amber-100 p-2.5 rounded-lg">
                 <MapPin className="h-5 w-5 text-amber-600" />
@@ -74,8 +76,8 @@ export default function Dashboard() {
           <AutocompleteInput 
             value={toStop}
             onChange={setToStop}
-            placeholder="Type Drop Location..."
-            label="To"
+            placeholder={t('dashDropPlaceholder')}
+            label={t('dashTo')}
             icon={
               <div className="bg-red-100 p-2.5 rounded-lg">
                 <MapPin className="h-5 w-5 text-red-600" />
@@ -88,9 +90,9 @@ export default function Dashboard() {
       {/* Stats/Features row removed for simplicity */}
       {/* Main Content Areas */}
       {loading ? (
-        <div className="py-20 text-center text-gray-500 font-medium">Loading live data...</div>
+        <div className="py-20 text-center text-gray-500 font-medium">{t('dashLoadingData')}</div>
       ) : error ? (
-        <div className="py-20 text-center text-red-500 font-medium">Error loading data: {error}</div>
+        <div className="py-20 text-center text-red-500 font-medium">{t('dashErrorData')} {error}</div>
       ) : (
         <>
           <LiveBuses buses={filteredBuses} />

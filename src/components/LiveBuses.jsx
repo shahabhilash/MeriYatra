@@ -1,21 +1,23 @@
 import React from 'react';
 import { Bus, MapPin, Clock } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function LiveBuses({ buses = [] }) {
+  const { t } = useLanguage();
   if (!buses || buses.length === 0) {
-    return <div className="text-gray-500 py-8 text-center glass-panel">No active rides on this route currently.</div>;
+    return <div className="text-gray-500 py-8 text-center glass-panel">{t('noActiveRides')}</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Live Rides</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('liveRidesTitle')}</h2>
         <span className="flex items-center gap-2 text-sm text-green-600 font-medium bg-green-50 px-3 py-1 rounded-full border border-green-100">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
           </span>
-          Live Tracking Active
+          {t('liveTrackingActive')}
         </span>
       </div>
       
@@ -35,31 +37,31 @@ export default function LiveBuses({ buses = [] }) {
               <span className={`text-sm font-bold px-3 py-1.5 rounded-full ${
                 bus.status === 'On Time' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
               }`}>
-                {bus.status}
+                {bus.status === 'On Time' ? t('statusOnTime') : t('statusDelayed')}
               </span>
             </div>
             
             <div className="space-y-3">
               <div className="flex items-center text-lg text-gray-800">
                 <Clock className="h-5 w-5 mr-2 text-red-600" />
-                <span>ETA: <strong className="text-red-700 text-xl">{bus.eta}</strong></span>
+                <span>{t('etaLabel')} <strong className="text-red-700 text-xl">{bus.eta}</strong></span>
               </div>
               <div className="flex items-center text-sm text-gray-600">
                 <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-                <span>Next Stop: <strong className="text-gray-900">Main St. Station</strong></span>
+                <span>{t('nextStopLabel')} <strong className="text-gray-900">Main St. Station</strong></span>
               </div>
             </div>
             
             <div className="mt-5 pt-4 border-t border-gray-100 flex justify-between items-center">
               <div className="text-xs font-medium text-gray-500">
-                Occupancy: <span className={`
+                {t('occupancyLabel')} <span className={`
                   ${bus.occupancy === 'Low' ? 'text-green-600' : ''}
                   ${bus.occupancy === 'Medium' ? 'text-yellow-600' : ''}
                   ${bus.occupancy === 'High' ? 'text-red-600' : ''}
                 `}>{bus.occupancy}</span>
               </div>
               <button className="text-sm font-semibold text-red-600 hover:text-red-800 transition-colors">
-                View on map &rarr;
+                {t('viewOnMap')}
               </button>
             </div>
           </div>

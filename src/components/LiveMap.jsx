@@ -2,6 +2,7 @@ import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { useLanguage } from '../context/LanguageContext';
 
 // Fix for default Leaflet icon paths in Vite/React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -28,12 +29,13 @@ const iconRed = createIcon('red');
 const iconBlue = createIcon('blue');
 
 export default function LiveMap({ buses = [] }) {
+  const { t } = useLanguage();
   // Center roughly around LA based on mock coordinates
   const defaultCenter = [34.053, -118.243];
   
   return (
     <div className="mt-12">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Live Route Map</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('liveMapTitle')}</h2>
       <div className="relative w-full h-[400px] rounded-2xl overflow-hidden border border-gray-300 shadow-inner z-0">
         <MapContainer center={defaultCenter} zoom={14} style={{ height: '100%', width: '100%' }}>
           <TileLayer
@@ -54,10 +56,10 @@ export default function LiveMap({ buses = [] }) {
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                       bus.status === 'On Time' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                     }`}>
-                      {bus.status}
+                      {bus.status === 'On Time' ? t('statusOnTime') : t('statusDelayed')}
                     </span>
                     <div className="mt-2 text-xs">
-                      ETA: <strong>{bus.eta}</strong>
+                      {t('etaLabel')} <strong>{bus.eta}</strong>
                     </div>
                   </div>
                 </Popup>

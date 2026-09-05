@@ -5,10 +5,12 @@ import Dashboard from './components/Dashboard'
 import Footer from './components/Footer'
 import RoutesPage from './pages/RoutesPage'
 import AboutPage from './pages/AboutPage'
+import { LanguageProvider } from './context/LanguageContext'
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <LanguageProvider>
+      <div className="min-h-screen flex flex-col font-sans">
       <Navbar />
       <main className="flex-grow">
         <Routes>
@@ -18,7 +20,8 @@ function App() {
         </Routes>
       </main>
       <Footer />
-    </div>
+      </div>
+    </LanguageProvider>
   )
 }
 
