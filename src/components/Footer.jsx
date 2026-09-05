@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bus, Github } from 'lucide-react';
+import { Bus } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -10,13 +10,6 @@ export default function Footer() {
             <Bus className="h-5 w-5 text-red-600" />
             <span className="font-bold text-gray-900">MeriYatra</span>
           </div>
-        </div>
-        
-        <div className="flex items-center gap-6">
-          <a href="#" className="text-gray-400 hover:text-gray-900 transition-colors">
-            <span className="sr-only">GitHub</span>
-            <Github className="h-6 w-6" />
-          </a>
         </div>
       </div>
     </footer>

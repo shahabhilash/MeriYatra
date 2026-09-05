@@ -9,6 +9,7 @@ export default function Dashboard() {
   const { buses, routes, loading, error } = useBuses();
   const [fromStop, setFromStop] = useState('');
   const [toStop, setToStop] = useState('');
+  const [rtoNumber, setRtoNumber] = useState('');
 
   const allStops = [...new Set(routes.flatMap(route => route.stops))].sort();
 
@@ -33,14 +34,21 @@ export default function Dashboard() {
       {/* Hero Section */}
       <div className="text-center py-12 lg:py-20">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
-          Find Your <span className="text-red-600">Ride</span> Easily
+          Track Your <span className="text-red-600">Ride</span> Hassle-Free
         </h1>
         <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 mb-10">
           Live tracking for buses, autos, and cabs on your daily commute. Simple, reliable, and free to use.
         </p>
         
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3.5 rounded-xl font-bold text-lg transition-all shadow-lg shadow-red-200">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-2xl mx-auto">
+          <input 
+            type="text" 
+            value={rtoNumber}
+            onChange={(e) => setRtoNumber(e.target.value.toUpperCase())}
+            placeholder="Enter RTO No. (e.g. MH01...)" 
+            className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium text-lg border border-gray-300 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all uppercase bg-white text-gray-900 shadow-sm"
+          />
+          <button className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-3.5 rounded-xl font-bold text-lg transition-all shadow-lg shadow-red-200 shrink-0">
             Find My Ride
           </button>
         </div>
