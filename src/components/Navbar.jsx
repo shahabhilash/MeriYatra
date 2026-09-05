@@ -11,11 +11,8 @@ export default function Navbar() {
             <div className="bg-blue-600 p-2 rounded-xl">
               <Bus className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-              TrackMyBus
-            </span>
-            <span className="ml-2 text-xs font-medium px-2 py-1 bg-blue-100 text-blue-800 rounded-full hidden sm:inline-block">
-              SVH26003
+            <span className="text-xl font-bold text-blue-700">
+              MeriYatra
             </span>
           </Link>
           <div className="hidden md:flex items-center space-x-8">

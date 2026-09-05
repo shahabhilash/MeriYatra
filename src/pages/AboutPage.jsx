@@ -5,9 +5,9 @@ export default function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6">About TrackMyBus</h1>
-        <p className="text-lg md:text-xl text-gray-500">
-          A smart city initiative built during the <strong className="text-blue-600">SVH26003</strong> Hackathon.
+        <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6">About MeriYatra</h1>
+        <p className="text-lg md:text-xl text-gray-600">
+          A community project to make your daily bus journeys <strong className="text-blue-600">easy and reliable</strong>.
         </p>
       </div>
 
@@ -19,11 +19,10 @@ export default function AboutPage() {
             </div>
             <h2 className="text-2xl font-bold text-gray-900">Project Overview</h2>
           </div>
-          <p className="text-gray-600 leading-relaxed">
-            TrackMyBus aims to solve the problem of unpredictable public transit schedules by providing real-time, 
-            affordable tracking for local city buses. Using cheap IoT nodes (NodeMCU ESP8266 + NEO-6M GPS modules) 
-            installed in buses, we transmit live location data to a central cloud server, which is then visualized 
-            on this frontend application.
+          <p className="text-gray-600 leading-relaxed text-lg">
+            MeriYatra helps you track your local city buses in real-time, right from your phone. 
+            No more waiting endlessly at the bus stop—now you can see exactly where your bus is 
+            and when it will arrive.
           </p>
         </div>
 
@@ -35,8 +34,8 @@ export default function AboutPage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900">Hardware</h3>
             </div>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              We leverage low-cost NodeMCU modules paired with GPS sensors. These act as our IoT nodes, sending latitude, longitude, and speed data over 4G cellular networks via MQTT or WebSockets to our backend.
+            <p className="text-gray-600 text-sm leading-relaxed text-base">
+              We install simple, reliable GPS trackers on buses that send live location updates securely to our system.
             </p>
           </div>
 
@@ -45,12 +44,10 @@ export default function AboutPage() {
               <div className="bg-green-100 p-2 rounded-lg">
                 <Code className="h-6 w-6 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900">Software</h3>
+              <h3 className="text-xl font-bold text-gray-900">Technology</h3>
             </div>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              Our frontend is built with React, Vite, and Tailwind CSS for a modern, glassmorphic UI. 
-              We use React Leaflet for mapping. 
-              Currently, the data is mocked to showcase the UI while the backend is being integrated.
+            <p className="text-gray-600 text-sm leading-relaxed text-base">
+              Our platform is designed to be extremely fast and easy to use on any smartphone, ensuring you get accurate bus timings when you need them most.
             </p>
           </div>
         </div>
@@ -58,8 +55,8 @@ export default function AboutPage() {
         <div className="glass-panel p-8 text-center bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100">
           <Lightbulb className="h-10 w-10 text-yellow-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Future Scope</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            In the next phase, we plan to implement machine learning models to predict accurate ETAs based on traffic conditions, historical data, and weather. We will also introduce an Admin Dashboard for fleet managers.
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+            We are working on bringing more buses and routes to the app. In the future, MeriYatra will help you plan your complete journey and alert you if your bus is running late.
           </p>
         </div>
       </div>

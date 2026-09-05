@@ -28,21 +28,21 @@ export default function LiveBuses({ buses = [] }) {
                   <Bus className="h-5 w-5 text-indigo-600" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900">{bus.id}</h3>
-                  <p className="text-xs text-gray-500 font-medium">{bus.route}</p>
+                  <h3 className="text-lg font-extrabold text-gray-900">{bus.id}</h3>
+                  <p className="text-sm text-gray-600 font-medium">{bus.route}</p>
                 </div>
               </div>
-              <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                bus.status === 'On Time' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+              <span className={`text-sm font-bold px-3 py-1.5 rounded-full ${
+                bus.status === 'On Time' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
               }`}>
                 {bus.status}
               </span>
             </div>
             
             <div className="space-y-3">
-              <div className="flex items-center text-sm text-gray-600">
-                <Clock className="h-4 w-4 mr-2 text-gray-400" />
-                <span>ETA: <strong className="text-gray-900">{bus.eta}</strong></span>
+              <div className="flex items-center text-lg text-gray-800">
+                <Clock className="h-5 w-5 mr-2 text-blue-600" />
+                <span>ETA: <strong className="text-blue-700 text-xl">{bus.eta}</strong></span>
               </div>
               <div className="flex items-center text-sm text-gray-600">
                 <MapPin className="h-4 w-4 mr-2 text-gray-400" />

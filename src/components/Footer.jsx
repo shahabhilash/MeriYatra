@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="flex flex-col items-center md:items-start gap-2">
           <div className="flex items-center gap-2">
             <Bus className="h-5 w-5 text-blue-600" />
-            <span className="font-bold text-gray-900">TrackMyBus</span>
+            <span className="font-bold text-gray-900">MeriYatra</span>
           </div>
         </div>
         

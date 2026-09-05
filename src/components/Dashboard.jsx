@@ -17,11 +17,10 @@ export default function Dashboard() {
       {/* Hero Section */}
       <div className="text-center py-12 lg:py-20">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
-          Real-time Transit Tracking for <br className="hidden md:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Smart Cities</span>
+          Find Your <span className="text-blue-600">Bus</span> Easily
         </h1>
-        <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-500 mb-10">
-          Track public transport in real-time. SVH26003 hackathon project bringing affordable IoT tracking to local buses.
+        <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 mb-10">
+          Live bus tracking for your daily commute. Simple, reliable, and free to use.
         </p>
         
         <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -52,37 +51,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats/Features row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-        <div className="glass-panel p-6 flex items-center gap-4">
-          <div className="bg-green-100 p-3 rounded-full text-green-600">
-            <Activity className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">System Status</p>
-            <p className="text-xl font-bold text-gray-900">All Systems Operational</p>
-          </div>
-        </div>
-        <div className="glass-panel p-6 flex items-center gap-4">
-          <div className="bg-blue-100 p-3 rounded-full text-blue-600">
-            <Zap className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Update Frequency</p>
-            <p className="text-xl font-bold text-gray-900">Every 5 Seconds</p>
-          </div>
-        </div>
-        <div className="glass-panel p-6 flex items-center gap-4">
-          <div className="bg-purple-100 p-3 rounded-full text-purple-600">
-            <ShieldCheck className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Active Devices</p>
-            <p className="text-xl font-bold text-gray-900">3 IoT Nodes</p>
-          </div>
-        </div>
-      </div>
-
+      {/* Stats/Features row removed for simplicity */}
       {/* Main Content Areas */}
       {loading ? (
         <div className="py-20 text-center text-gray-500 font-medium">Loading live data...</div>

@@ -45,7 +45,7 @@ export default function RoutesPage() {
                     <div className="bg-white p-1 rounded-full border-2 border-indigo-200 z-10 shadow-sm">
                       <MapPin className="h-3 w-3 text-indigo-500" />
                     </div>
-                    <span className="text-sm text-gray-600 font-medium">{stop}</span>
+                    <span className="text-base text-gray-800 font-medium">{stop}</span>
                   </li>
                 ))}
               </ul>
