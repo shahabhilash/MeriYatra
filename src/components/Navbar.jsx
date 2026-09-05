@@ -1,10 +1,17 @@
-import React from 'react';
-import { Bus, Menu, UserCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Bus, Menu, X, UserCircle } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Navbar() {
   const { language, toggleLanguage, t } = useLanguage();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Close mobile menu when route changes
+  React.useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location]);
 
   return (
     <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
@@ -35,13 +42,40 @@ export default function Navbar() {
               <span>{t('navLogin')}</span>
             </button>
           </div>
-          <div className="md:hidden flex items-center">
-            <button className="text-gray-600 hover:text-gray-900 focus:outline-none">
-              <Menu className="h-6 w-6" />
+          <div className="md:hidden flex items-center gap-4">
+            <button 
+              onClick={toggleLanguage}
+              className="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-lg transition-colors border border-red-200"
+            >
+              {language === 'en' ? 'A/अ' : 'EN'}
+            </button>
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-gray-600 hover:text-gray-900 focus:outline-none bg-gray-50 p-2 rounded-lg"
+            >
+              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-b border-gray-200 shadow-xl absolute w-full left-0 top-16">
+          <div className="px-4 pt-2 pb-6 space-y-2 flex flex-col">
+            <Link to="/" className="block px-4 py-3 text-gray-800 font-medium hover:bg-red-50 hover:text-red-600 rounded-lg">{t('navDashboard')}</Link>
+            <Link to="/routes" className="block px-4 py-3 text-gray-800 font-medium hover:bg-red-50 hover:text-red-600 rounded-lg">{t('navRoutes')}</Link>
+            <Link to="/about" className="block px-4 py-3 text-gray-800 font-medium hover:bg-red-50 hover:text-red-600 rounded-lg">{t('navAbout')}</Link>
+            
+            <div className="border-t border-gray-100 mt-2 pt-4 px-4">
+              <button className="w-full flex justify-center items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-3 rounded-xl font-bold transition-colors">
+                <UserCircle className="h-5 w-5" />
+                <span>{t('navLogin')}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
