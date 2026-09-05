@@ -17,15 +17,15 @@ export default function Dashboard() {
       {/* Hero Section */}
       <div className="text-center py-12 lg:py-20">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
-          Find Your <span className="text-red-600">Bus</span> Easily
+          Find Your <span className="text-red-600">Ride</span> Easily
         </h1>
         <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 mb-10">
-          Live bus tracking for your daily commute. Simple, reliable, and free to use.
+          Live tracking for buses, autos, and cabs on your daily commute. Simple, reliable, and free to use.
         </p>
         
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3.5 rounded-xl font-bold text-lg transition-all shadow-lg shadow-red-200">
-            Find My Bus
+            Find My Ride
           </button>
           <button className="bg-white hover:bg-gray-50 text-gray-800 px-8 py-3.5 rounded-xl font-bold text-lg transition-all border border-gray-200 shadow-sm">
             View Schedules

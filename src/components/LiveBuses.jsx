@@ -3,13 +3,13 @@ import { Bus, MapPin, Clock } from 'lucide-react';
 
 export default function LiveBuses({ buses = [] }) {
   if (!buses || buses.length === 0) {
-    return <div className="text-gray-500 py-8 text-center glass-panel">No active buses on this route currently.</div>;
+    return <div className="text-gray-500 py-8 text-center glass-panel">No active rides on this route currently.</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Live Buses</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Live Rides</h2>
         <span className="flex items-center gap-2 text-sm text-green-600 font-medium bg-green-50 px-3 py-1 rounded-full border border-green-100">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>

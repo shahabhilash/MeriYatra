@@ -20,8 +20,8 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold text-gray-900">Project Overview</h2>
           </div>
           <p className="text-gray-600 leading-relaxed text-lg">
-            MeriYatra helps you track your local city buses in real-time, right from your phone. 
-            No more waiting endlessly at the bus stop—now you can see exactly where your bus is 
+            MeriYatra helps you track your local buses, autos, and cabs in real-time, right from your phone. 
+            No more waiting endlessly at the stop—now you can see exactly where your ride is 
             and when it will arrive.
           </p>
         </div>
@@ -56,7 +56,7 @@ export default function AboutPage() {
           <Lightbulb className="h-10 w-10 text-yellow-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Future Scope</h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-            We are working on bringing more buses and routes to the app. In the future, MeriYatra will help you plan your complete journey and alert you if your bus is running late.
+            We are working on bringing more rides and routes to the app. In the future, MeriYatra will help you plan your complete journey and alert you if your ride is running late.
           </p>
         </div>
       </div>
