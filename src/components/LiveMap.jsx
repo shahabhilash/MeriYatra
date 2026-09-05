@@ -41,8 +41,8 @@ function AutoCenter({ location }) {
 
 export default function LiveMap({ buses = [], liveLocation = null }) {
   const { t } = useLanguage();
-  // Center roughly around LA based on mock coordinates
-  const defaultCenter = [34.053, -118.243];
+  // Center roughly around VIT Bhopal
+  const defaultCenter = [23.0775, 76.8513];
   
   return (
     <div className="mt-12">
