@@ -17,14 +17,14 @@ export default function Dashboard() {
       {/* Hero Section */}
       <div className="text-center py-12 lg:py-20">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
-          Find Your <span className="text-blue-600">Bus</span> Easily
+          Find Your <span className="text-red-600">Bus</span> Easily
         </h1>
         <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 mb-10">
           Live bus tracking for your daily commute. Simple, reliable, and free to use.
         </p>
         
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl font-bold text-lg transition-all shadow-lg shadow-blue-200">
+          <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3.5 rounded-xl font-bold text-lg transition-all shadow-lg shadow-red-200">
             Find My Bus
           </button>
           <button className="bg-white hover:bg-gray-50 text-gray-800 px-8 py-3.5 rounded-xl font-bold text-lg transition-all border border-gray-200 shadow-sm">
@@ -34,7 +34,7 @@ export default function Dashboard() {
 
         {/* Route Selector */}
         <div className="mt-12 max-w-md mx-auto glass-panel p-4 flex items-center gap-4">
-          <Route className="h-6 w-6 text-indigo-500" />
+          <Route className="h-6 w-6 text-amber-500" />
           <div className="flex-grow text-left">
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Filter by Route</label>
             <select 

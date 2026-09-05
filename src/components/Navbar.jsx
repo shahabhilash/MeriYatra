@@ -8,17 +8,17 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-            <div className="bg-blue-600 p-2 rounded-xl">
+            <div className="bg-red-600 p-2 rounded-xl">
               <Bus className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-blue-700">
+            <span className="text-xl font-bold text-red-700">
               MeriYatra
             </span>
           </Link>
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Dashboard</Link>
-            <Link to="/routes" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Routes</Link>
-            <Link to="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">About</Link>
+            <Link to="/" className="text-gray-700 hover:text-red-600 font-medium transition-colors">Dashboard</Link>
+            <Link to="/routes" className="text-gray-700 hover:text-red-600 font-medium transition-colors">Routes</Link>
+            <Link to="/about" className="text-gray-700 hover:text-red-600 font-medium transition-colors">About</Link>
             <button className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
               <UserCircle className="h-5 w-5" />
               <span>Login</span>

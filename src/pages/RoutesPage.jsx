@@ -26,12 +26,12 @@ export default function RoutesPage() {
         {routes.map(route => (
           <div key={route.id} className="glass-panel p-6 flex flex-col hover:-translate-y-1 transition-transform duration-300">
             <div className="flex items-center gap-3 mb-4 border-b border-gray-100 pb-4">
-              <div className="bg-indigo-100 p-3 rounded-xl">
-                <Map className="h-6 w-6 text-indigo-600" />
+              <div className="bg-amber-100 p-3 rounded-xl">
+                <Map className="h-6 w-6 text-amber-600" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900">{route.name}</h2>
-                <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full uppercase tracking-wide">
+                <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full uppercase tracking-wide">
                   {route.id}
                 </span>
               </div>
@@ -42,8 +42,8 @@ export default function RoutesPage() {
               <ul className="space-y-3 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
                 {route.stops.map((stop, idx) => (
                   <li key={idx} className="relative flex items-center gap-3">
-                    <div className="bg-white p-1 rounded-full border-2 border-indigo-200 z-10 shadow-sm">
-                      <MapPin className="h-3 w-3 text-indigo-500" />
+                    <div className="bg-white p-1 rounded-full border-2 border-amber-200 z-10 shadow-sm">
+                      <MapPin className="h-3 w-3 text-amber-500" />
                     </div>
                     <span className="text-base text-gray-800 font-medium">{stop}</span>
                   </li>

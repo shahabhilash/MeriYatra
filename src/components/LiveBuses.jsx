@@ -24,8 +24,8 @@ export default function LiveBuses({ buses = [] }) {
           <div key={bus.id} className="glass-panel p-5 hover:-translate-y-1 transition-transform duration-300">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
-                <div className="bg-indigo-100 p-2.5 rounded-lg">
-                  <Bus className="h-5 w-5 text-indigo-600" />
+                <div className="bg-amber-100 p-2.5 rounded-lg">
+                  <Bus className="h-5 w-5 text-amber-600" />
                 </div>
                 <div>
                   <h3 className="text-lg font-extrabold text-gray-900">{bus.id}</h3>
@@ -41,8 +41,8 @@ export default function LiveBuses({ buses = [] }) {
             
             <div className="space-y-3">
               <div className="flex items-center text-lg text-gray-800">
-                <Clock className="h-5 w-5 mr-2 text-blue-600" />
-                <span>ETA: <strong className="text-blue-700 text-xl">{bus.eta}</strong></span>
+                <Clock className="h-5 w-5 mr-2 text-red-600" />
+                <span>ETA: <strong className="text-red-700 text-xl">{bus.eta}</strong></span>
               </div>
               <div className="flex items-center text-sm text-gray-600">
                 <MapPin className="h-4 w-4 mr-2 text-gray-400" />
@@ -58,7 +58,7 @@ export default function LiveBuses({ buses = [] }) {
                   ${bus.occupancy === 'High' ? 'text-red-600' : ''}
                 `}>{bus.occupancy}</span>
               </div>
-              <button className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+              <button className="text-sm font-semibold text-red-600 hover:text-red-800 transition-colors">
                 View on map &rarr;
               </button>
             </div>
