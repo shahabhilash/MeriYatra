@@ -1,16 +1,31 @@
 import React, { useState } from 'react';
 import LiveBuses from './LiveBuses';
 import LiveMap from './LiveMap';
-import { Activity, ShieldCheck, Zap, Route } from 'lucide-react';
+import { Route, MapPin } from 'lucide-react';
 import { useBuses } from '../hooks/useBuses';
 
 export default function Dashboard() {
   const { buses, routes, loading, error } = useBuses();
-  const [selectedRouteId, setSelectedRouteId] = useState('ALL');
+  const [fromStop, setFromStop] = useState('');
+  const [toStop, setToStop] = useState('');
 
-  const filteredBuses = selectedRouteId === 'ALL' 
-    ? buses 
-    : buses.filter(bus => bus.routeId === selectedRouteId);
+  const allStops = [...new Set(routes.flatMap(route => route.stops))].sort();
+
+  const matchingRouteIds = routes.filter(route => {
+    if (!fromStop && !toStop) return true;
+    
+    const hasFrom = fromStop ? route.stops.includes(fromStop) : true;
+    const hasTo = toStop ? route.stops.includes(toStop) : true;
+    
+    // Ensure 'from' comes before 'to' if both are selected
+    if (fromStop && toStop && hasFrom && hasTo) {
+      return route.stops.indexOf(fromStop) < route.stops.indexOf(toStop);
+    }
+    
+    return hasFrom && hasTo;
+  }).map(r => r.id);
+
+  const filteredBuses = buses.filter(bus => matchingRouteIds.includes(bus.routeId));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -32,21 +47,48 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Route Selector */}
-        <div className="mt-12 max-w-md mx-auto glass-panel p-4 flex items-center gap-4">
-          <Route className="h-6 w-6 text-amber-500" />
-          <div className="flex-grow text-left">
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Filter by Route</label>
-            <select 
-              value={selectedRouteId}
-              onChange={(e) => setSelectedRouteId(e.target.value)}
-              className="w-full bg-transparent text-gray-900 font-bold focus:outline-none cursor-pointer"
-            >
-              <option value="ALL">All Routes</option>
-              {routes.map(route => (
-                <option key={route.id} value={route.id}>{route.name}</option>
-              ))}
-            </select>
+        {/* Route Selector (From/To) */}
+        <div className="mt-12 max-w-3xl mx-auto glass-panel p-4 flex flex-col md:flex-row items-center gap-4">
+          <div className="flex-grow w-full text-left flex items-center gap-3">
+            <div className="bg-amber-100 p-2.5 rounded-lg">
+              <MapPin className="h-5 w-5 text-amber-600" />
+            </div>
+            <div className="flex-grow">
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">From</label>
+              <select 
+                value={fromStop}
+                onChange={(e) => setFromStop(e.target.value)}
+                className="w-full bg-transparent text-gray-900 font-bold focus:outline-none cursor-pointer truncate"
+              >
+                <option value="">Select Pickup Location</option>
+                {allStops.map(stop => (
+                  <option key={stop} value={stop}>{stop}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          <div className="hidden md:flex text-gray-300">
+            <Route className="h-5 w-5" />
+          </div>
+          
+          <div className="flex-grow w-full text-left flex items-center gap-3">
+            <div className="bg-red-100 p-2.5 rounded-lg">
+              <MapPin className="h-5 w-5 text-red-600" />
+            </div>
+            <div className="flex-grow">
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">To</label>
+              <select 
+                value={toStop}
+                onChange={(e) => setToStop(e.target.value)}
+                className="w-full bg-transparent text-gray-900 font-bold focus:outline-none cursor-pointer truncate"
+              >
+                <option value="">Select Drop Location</option>
+                {allStops.map(stop => (
+                  <option key={stop} value={stop}>{stop}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>
