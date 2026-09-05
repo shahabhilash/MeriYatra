@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import LiveBuses from './LiveBuses';
 import LiveMap from './LiveMap';
+import AutocompleteInput from './AutocompleteInput';
 import { Route, MapPin } from 'lucide-react';
 import { useBuses } from '../hooks/useBuses';
 
@@ -42,54 +43,37 @@ export default function Dashboard() {
           <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3.5 rounded-xl font-bold text-lg transition-all shadow-lg shadow-red-200">
             Find My Ride
           </button>
-          <button className="bg-white hover:bg-gray-50 text-gray-800 px-8 py-3.5 rounded-xl font-bold text-lg transition-all border border-gray-200 shadow-sm">
-            View Schedules
-          </button>
         </div>
 
         {/* Route Selector (From/To) */}
         <div className="mt-12 max-w-3xl mx-auto glass-panel p-4 flex flex-col md:flex-row items-center gap-4">
-          <div className="flex-grow w-full text-left flex items-center gap-3">
-            <div className="bg-amber-100 p-2.5 rounded-lg">
-              <MapPin className="h-5 w-5 text-amber-600" />
-            </div>
-            <div className="flex-grow">
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">From</label>
-              <select 
-                value={fromStop}
-                onChange={(e) => setFromStop(e.target.value)}
-                className="w-full bg-transparent text-gray-900 font-bold focus:outline-none cursor-pointer truncate"
-              >
-                <option value="">Select Pickup Location</option>
-                {allStops.map(stop => (
-                  <option key={stop} value={stop}>{stop}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <AutocompleteInput 
+            value={fromStop}
+            onChange={setFromStop}
+            placeholder="Type Pickup Location..."
+            label="From"
+            icon={
+              <div className="bg-amber-100 p-2.5 rounded-lg">
+                <MapPin className="h-5 w-5 text-amber-600" />
+              </div>
+            }
+          />
           
-          <div className="hidden md:flex text-gray-300">
+          <div className="hidden md:flex text-gray-300 shrink-0 px-2">
             <Route className="h-5 w-5" />
           </div>
           
-          <div className="flex-grow w-full text-left flex items-center gap-3">
-            <div className="bg-red-100 p-2.5 rounded-lg">
-              <MapPin className="h-5 w-5 text-red-600" />
-            </div>
-            <div className="flex-grow">
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">To</label>
-              <select 
-                value={toStop}
-                onChange={(e) => setToStop(e.target.value)}
-                className="w-full bg-transparent text-gray-900 font-bold focus:outline-none cursor-pointer truncate"
-              >
-                <option value="">Select Drop Location</option>
-                {allStops.map(stop => (
-                  <option key={stop} value={stop}>{stop}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <AutocompleteInput 
+            value={toStop}
+            onChange={setToStop}
+            placeholder="Type Drop Location..."
+            label="To"
+            icon={
+              <div className="bg-red-100 p-2.5 rounded-lg">
+                <MapPin className="h-5 w-5 text-red-600" />
+              </div>
+            }
+          />
         </div>
       </div>
 
