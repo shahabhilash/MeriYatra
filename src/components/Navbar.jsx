@@ -37,10 +37,10 @@ export default function Navbar() {
               {language === 'en' ? 'A / अ' : 'EN / HI'}
             </button>
 
-            <button className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
+            <Link to="/login" className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
               <UserCircle className="h-5 w-5" />
               <span>{t('navLogin')}</span>
-            </button>
+            </Link>
           </div>
           <div className="md:hidden flex items-center gap-4">
             <button 
@@ -68,10 +68,10 @@ export default function Navbar() {
             <Link to="/about" className="block px-4 py-3 text-gray-800 font-medium hover:bg-red-50 hover:text-red-600 rounded-lg">{t('navAbout')}</Link>
             
             <div className="border-t border-gray-100 mt-2 pt-4 px-4">
-              <button className="w-full flex justify-center items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-3 rounded-xl font-bold transition-colors">
+              <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full flex justify-center items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-3 rounded-xl font-bold transition-colors">
                 <UserCircle className="h-5 w-5" />
                 <span>{t('navLogin')}</span>
-              </button>
+              </Link>
             </div>
           </div>
         </div>

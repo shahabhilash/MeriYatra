@@ -57,6 +57,26 @@ export const translations = {
     
     // Autocomplete Input
     searchingIndia: "Searching India...",
+    
+    // Auth Page
+    authPassenger: "Passenger",
+    authDriver: "Driver",
+    authSignIn: "Sign In",
+    authRegister: "Create Account",
+    authEmailOrPhone: "Email or Phone Number",
+    authPassword: "Password",
+    authVehicleType: "Vehicle Type",
+    authVehicleTypeBus: "Bus",
+    authVehicleTypeAuto: "Auto",
+    authVehicleTypeCab: "Cab",
+    authRtoNumber: "Registered RTO Number (e.g. MH01AB1234)",
+    authUploadDoc: "Upload Vehicle Document (RC/License)",
+    authNoAccount: "Don't have an account?",
+    authHasAccount: "Already have an account?",
+    authCreateOne: "Create one",
+    authLoginHere: "Login here",
+    authSubmitLogin: "Login securely",
+    authSubmitRegister: "Register and Continue",
   },
   hi: {
     // Navbar
@@ -117,5 +137,25 @@ export const translations = {
     
     // Autocomplete Input
     searchingIndia: "खोज हो रही है...",
+    
+    // Auth Page
+    authPassenger: "यात्री",
+    authDriver: "ड्राइवर",
+    authSignIn: "साइन इन करें",
+    authRegister: "खाता बनाएं",
+    authEmailOrPhone: "ईमेल या फोन नंबर",
+    authPassword: "पासवर्ड",
+    authVehicleType: "वाहन का प्रकार",
+    authVehicleTypeBus: "बस",
+    authVehicleTypeAuto: "ऑटो",
+    authVehicleTypeCab: "कैब",
+    authRtoNumber: "पंजीकृत आरटीओ नंबर (उदा. MH01AB1234)",
+    authUploadDoc: "वाहन दस्तावेज़ अपलोड करें (RC/लाइसेंस)",
+    authNoAccount: "खाता नहीं है?",
+    authHasAccount: "क्या आपके पास पहले से खाता है?",
+    authCreateOne: "नया बनाएं",
+    authLoginHere: "यहां लॉगिन करें",
+    authSubmitLogin: "सुरक्षित लॉगिन करें",
+    authSubmitRegister: "रजिस्टर करें और जारी रखें",
   }
 };
