@@ -1,5 +1,5 @@
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { useLanguage } from '../context/LanguageContext';
@@ -7,12 +7,12 @@ import { useLanguage } from '../context/LanguageContext';
 // Fix for default Leaflet icon paths in Vite/React
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Custom colored icons based on status
+// Custom icons based on status
 const createIcon = (color) => {
   return new L.Icon({
     iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
@@ -28,7 +28,18 @@ const iconGreen = createIcon('green');
 const iconRed = createIcon('red');
 const iconBlue = createIcon('blue');
 
-export default function LiveMap({ buses = [] }) {
+// Helper component to auto-pan the map to the live GPS location
+function AutoCenter({ location }) {
+  const map = useMap();
+  useEffect(() => {
+    if (location && location.lat && location.lng) {
+      map.flyTo([location.lat, location.lng], 16, { animate: true });
+    }
+  }, [location, map]);
+  return null;
+}
+
+export default function LiveMap({ buses = [], liveLocation = null }) {
   const { t } = useLanguage();
   // Center roughly around LA based on mock coordinates
   const defaultCenter = [34.053, -118.243];
@@ -38,25 +49,27 @@ export default function LiveMap({ buses = [] }) {
       <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('liveMapTitle')}</h2>
       <div className="relative w-full h-[400px] rounded-2xl overflow-hidden border border-gray-300 shadow-inner z-0">
         <MapContainer center={defaultCenter} zoom={14} style={{ height: '100%', width: '100%' }}>
+          <AutoCenter location={liveLocation} />
+          
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          {buses.map((bus) => {
-            let markerIcon = iconBlue;
-            if (bus.status === 'On Time') markerIcon = iconGreen;
-            if (bus.status === 'Delayed') markerIcon = iconRed;
-            
+          {buses.map(bus => {
+            const isDelayed = bus.status !== 'On Time';
             return (
-              <Marker key={bus.id} position={[bus.lat, bus.lng]} icon={markerIcon}>
+              <Marker 
+                key={bus.id} 
+                position={[bus.lat, bus.lng]} 
+                icon={isDelayed ? iconRed : iconBlue}
+              >
                 <Popup>
                   <div className="font-sans">
-                    <strong className="text-gray-900 block text-base">{bus.id}</strong>
-                    <span className="text-sm text-gray-600 block mb-1">{bus.route}</span>
+                    <h3 className="font-bold text-gray-900 text-sm mb-1">{bus.route}</h3>
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                      bus.status === 'On Time' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                      !isDelayed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                     }`}>
-                      {bus.status === 'On Time' ? t('statusOnTime') : t('statusDelayed')}
+                      {!isDelayed ? t('statusOnTime') : t('statusDelayed')}
                     </span>
                     <div className="mt-2 text-xs">
                       {t('etaLabel')} <strong>{bus.eta}</strong>
@@ -66,6 +79,27 @@ export default function LiveMap({ buses = [] }) {
               </Marker>
             );
           })}
+
+          {/* Realtime GPS Broadcast Marker */}
+          {liveLocation && (
+            <Marker 
+              position={[liveLocation.lat, liveLocation.lng]} 
+              icon={iconGreen}
+              zIndexOffset={1000}
+            >
+              <Popup>
+                <div className="font-sans">
+                  <h3 className="font-bold text-gray-900 text-sm mb-1">Live Driver!</h3>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 animate-pulse">
+                    Broadcasting GPS
+                  </span>
+                  <div className="mt-2 text-xs text-gray-500">
+                    Just updated.
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          )}
         </MapContainer>
       </div>
     </div>

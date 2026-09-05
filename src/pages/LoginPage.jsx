@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bus, User, Key, Mail, Car, FileText, Upload } from 'lucide-react';
+import { Bus, User, Key, Mail, Car, FileText, Upload, AlertCircle, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../services/supabase';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { manualSignIn } = useAuth();
   
   // States for toggles
   const [role, setRole] = useState('passenger'); // 'passenger' or 'driver'
@@ -17,11 +20,83 @@ export default function LoginPage() {
   const [vehicleType, setVehicleType] = useState('bus');
   const [rtoNumber, setRtoNumber] = useState('');
   
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate successful login/register
-    console.log(`Mock auth success for ${role} in ${mode} mode.`);
-    navigate('/');
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      if (mode === 'register') {
+        // Manual Registration using plain-text visible_password
+        const newUserId = crypto.randomUUID();
+
+        // 1. Insert into profiles
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([{ 
+            id: newUserId, 
+            identifier: identifier, 
+            role: role,
+            visible_password: password
+          }]);
+        
+        if (profileError) {
+          if (profileError.code === '23505') throw new Error("An account with this email/phone already exists.");
+          throw profileError;
+        }
+
+        // 2. If driver, insert into driver_details
+        if (role === 'driver') {
+          const { error: driverError } = await supabase
+            .from('driver_details')
+            .insert([{ 
+              id: newUserId, 
+              vehicle_type: vehicleType, 
+              rto_number: rtoNumber.toUpperCase() 
+            }]);
+          
+          if (driverError) throw driverError;
+        }
+
+        // Registration success, sign in manually
+        await manualSignIn(newUserId);
+        navigate('/');
+
+      } else {
+        // Manual Login checking visible_password
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('id, role, visible_password')
+          .eq('identifier', identifier)
+          .single();
+          
+        if (profileError || !profile) {
+          throw new Error("Invalid email/phone or password.");
+        }
+
+        if (profile.visible_password !== password) {
+          throw new Error("Invalid email/phone or password.");
+        }
+
+        // Strict Role Cross-Check
+        if (profile.role !== role) {
+           const correctRole = profile.role === 'passenger' ? t('authPassenger') : t('authDriver');
+           throw new Error(`Account mismatch: This account is registered as a ${correctRole}. Please select the correct tab.`);
+        }
+
+        // Login success
+        await manualSignIn(profile.id);
+        navigate('/');
+      }
+    } catch (err) {
+      console.error("Auth error:", err);
+      setErrorMsg(err.message || 'An error occurred during authentication.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,6 +142,13 @@ export default function LoginPage() {
               </button>
             </div>
           </div>
+
+          {errorMsg && (
+            <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-md flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+              <p className="text-sm text-red-700 font-medium">{errorMsg}</p>
+            </div>
+          )}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             {/* Common Fields */}
@@ -158,8 +240,10 @@ export default function LoginPage() {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+                disabled={loading}
+                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
               >
+                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {mode === 'login' ? t('authSubmitLogin') : t('authSubmitRegister')}
               </button>
             </div>

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import LiveBuses from './LiveBuses';
 import LiveMap from './LiveMap';
 import AutocompleteInput from './AutocompleteInput';
 import { Route, MapPin } from 'lucide-react';
 import { useBuses } from '../hooks/useBuses';
 import { useLanguage } from '../context/LanguageContext';
+import { supabase } from '../services/supabase';
 
 export default function Dashboard() {
   const { t } = useLanguage();
@@ -12,6 +13,45 @@ export default function Dashboard() {
   const [fromStop, setFromStop] = useState('');
   const [toStop, setToStop] = useState('');
   const [rtoNumber, setRtoNumber] = useState('');
+  
+  // Live GPS Tracking State
+  const [liveLocation, setLiveLocation] = useState(null);
+  const [isListening, setIsListening] = useState(false);
+  const channelRef = useRef(null);
+
+  const [channelStatus, setChannelStatus] = useState('');
+
+  const handleFindRide = () => {
+    if (!rtoNumber.trim()) return;
+    
+    setIsListening(true);
+    setLiveLocation(null);
+    setChannelStatus('Connecting to Supabase...');
+
+    // Clean up previous channel if searching again
+    if (channelRef.current) {
+      channelRef.current.unsubscribe();
+    }
+
+    const channelName = `tracking-${rtoNumber.trim().toUpperCase()}`;
+    console.log("Passenger trying to subscribe to:", channelName);
+    const channel = supabase.channel(channelName);
+    
+    channel.on('broadcast', { event: 'location' }, ({ payload }) => {
+       console.log("Passenger received GPS payload:", payload);
+       setLiveLocation(payload);
+       setChannelStatus(`Live signal received at ${new Date().toLocaleTimeString()}`);
+    }).subscribe((status, err) => {
+       console.log("Passenger channel status:", status, err);
+       if (status === 'SUBSCRIBED') {
+         setChannelStatus('Connected! Waiting for driver GPS signal...');
+       } else if (status === 'CHANNEL_ERROR') {
+         setChannelStatus('Error: Could not connect to Supabase Realtime.');
+       }
+    });
+
+    channelRef.current = channel;
+  };
 
   const allStops = [...new Set(routes.flatMap(route => route.stops))].sort();
 
@@ -43,15 +83,25 @@ export default function Dashboard() {
         </p>
         
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-2xl mx-auto">
-          <input 
-            type="text" 
-            value={rtoNumber}
-            onChange={(e) => setRtoNumber(e.target.value.toUpperCase())}
-            placeholder={t('dashRtoPlaceholder')} 
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium text-lg border border-gray-300 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all uppercase bg-white text-gray-900 shadow-sm"
-          />
-          <button className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-3.5 rounded-xl font-bold text-lg transition-all shadow-lg shadow-red-200 shrink-0">
-            {t('dashFindRideBtn')}
+          <div className="w-full sm:w-auto text-center sm:text-left">
+            <input 
+              type="text" 
+              value={rtoNumber}
+              onChange={(e) => setRtoNumber(e.target.value.toUpperCase())}
+              placeholder={t('dashRtoPlaceholder')} 
+              className="w-full px-6 py-3.5 rounded-xl font-medium text-lg border border-gray-300 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all uppercase bg-white text-gray-900 shadow-sm"
+            />
+            {channelStatus && (
+              <p className={`mt-2 text-sm font-bold ${liveLocation ? 'text-green-600' : 'text-blue-600'}`}>
+                {channelStatus}
+              </p>
+            )}
+          </div>
+          <button 
+            onClick={handleFindRide}
+            className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-3.5 rounded-xl font-bold text-lg transition-all shadow-lg shadow-red-200 shrink-0 self-start"
+          >
+            {isListening ? 'Listening...' : t('dashFindRideBtn')}
           </button>
         </div>
 
@@ -95,8 +145,15 @@ export default function Dashboard() {
         <div className="py-20 text-center text-red-500 font-medium">{t('dashErrorData')} {error}</div>
       ) : (
         <>
-          <LiveBuses buses={filteredBuses} />
-          <LiveMap buses={filteredBuses} />
+          {/* Show the map first so it is immediately visible */}
+          <LiveMap buses={filteredBuses} liveLocation={liveLocation} />
+          
+          {/* Hide mock buses if we are actively tracking a real driver */}
+          {!isListening && (
+            <div className="mt-12">
+              <LiveBuses buses={filteredBuses} />
+            </div>
+          )}
         </>
       )}
     </div>

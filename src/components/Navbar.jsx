@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Bus, Menu, X, UserCircle } from 'lucide-react';
+import { Bus, Menu, X, UserCircle, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const { language, toggleLanguage, t } = useLanguage();
+  const { user, signOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -37,10 +39,17 @@ export default function Navbar() {
               {language === 'en' ? 'A / अ' : 'EN / HI'}
             </button>
 
-            <Link to="/login" className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
-              <UserCircle className="h-5 w-5" />
-              <span>{t('navLogin')}</span>
-            </Link>
+            {user ? (
+              <button onClick={signOut} className="flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-700 px-4 py-2 rounded-lg font-medium transition-colors">
+                <LogOut className="h-5 w-5" />
+                <span>Logout</span>
+              </button>
+            ) : (
+              <Link to="/login" className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
+                <UserCircle className="h-5 w-5" />
+                <span>{t('navLogin')}</span>
+              </Link>
+            )}
           </div>
           <div className="md:hidden flex items-center gap-4">
             <button 
@@ -68,10 +77,17 @@ export default function Navbar() {
             <Link to="/about" className="block px-4 py-3 text-gray-800 font-medium hover:bg-red-50 hover:text-red-600 rounded-lg">{t('navAbout')}</Link>
             
             <div className="border-t border-gray-100 mt-2 pt-4 px-4">
-              <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full flex justify-center items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-3 rounded-xl font-bold transition-colors">
-                <UserCircle className="h-5 w-5" />
-                <span>{t('navLogin')}</span>
-              </Link>
+              {user ? (
+                <button onClick={() => { signOut(); setIsMobileMenuOpen(false); }} className="w-full flex justify-center items-center gap-2 bg-red-50 hover:bg-red-100 text-red-700 px-4 py-3 rounded-xl font-bold transition-colors">
+                  <LogOut className="h-5 w-5" />
+                  <span>Logout</span>
+                </button>
+              ) : (
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full flex justify-center items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-3 rounded-xl font-bold transition-colors">
+                  <UserCircle className="h-5 w-5" />
+                  <span>{t('navLogin')}</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
