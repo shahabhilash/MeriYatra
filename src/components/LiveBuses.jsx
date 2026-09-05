@@ -1,13 +1,11 @@
 import React from 'react';
 import { Bus, MapPin, Clock } from 'lucide-react';
 
-const dummyBuses = [
-  { id: 'BUS-101', route: 'Downtown - University', status: 'On Time', eta: '5 min', occupancy: 'Low', lat: 34.0522, lng: -118.2437 },
-  { id: 'BUS-204', route: 'Central Station - North Mall', status: 'Delayed', eta: '12 min', occupancy: 'High', lat: 34.0531, lng: -118.2450 },
-  { id: 'BUS-305', route: 'Tech Park - Westside', status: 'On Time', eta: '2 min', occupancy: 'Medium', lat: 34.0545, lng: -118.2420 },
-];
+export default function LiveBuses({ buses = [] }) {
+  if (!buses || buses.length === 0) {
+    return <div className="text-gray-500 py-8 text-center glass-panel">No active buses on this route currently.</div>;
+  }
 
-export default function LiveBuses() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -22,7 +20,7 @@ export default function LiveBuses() {
       </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {dummyBuses.map((bus) => (
+        {buses.map((bus) => (
           <div key={bus.id} className="glass-panel p-5 hover:-translate-y-1 transition-transform duration-300">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
