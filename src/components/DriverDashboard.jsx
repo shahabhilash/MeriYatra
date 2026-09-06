@@ -84,9 +84,9 @@ export default function DriverDashboard() {
     setError(null);
     setIsTracking(true);
 
-    // 1. Initialize Supabase Channel
-    const channelName = `tracking-${driverDetails.rto_number}`;
-    console.log("Driver trying to create channel:", channelName);
+    // 1. Initialize Global Supabase Channel
+    const channelName = 'tracking-global';
+    console.log("Driver trying to create global channel");
     const channel = supabase.channel(channelName);
     
     channel.subscribe((status, err) => {
@@ -112,7 +112,12 @@ export default function DriverDashboard() {
           channelRef.current.send({
             type: 'broadcast',
             event: 'location',
-            payload: newLocation
+            payload: {
+              ...newLocation,
+              id: driverDetails.rto_number,
+              vehicleType: driverDetails.vehicle_type,
+              timestamp: Date.now()
+            }
           }).then((res) => {
              console.log("Broadcast success:", res);
           }).catch((err) => {

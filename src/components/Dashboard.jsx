@@ -18,15 +18,54 @@ export default function Dashboard() {
   const [scheduledRides, setScheduledRides] = useState([]);
   const [isFetchingRides, setIsFetchingRides] = useState(true);
   
-  // Live GPS Tracking State
-  const [liveLocation, setLiveLocation] = useState(null);
-  const [isListening, setIsListening] = useState(false);
-  const channelRef = useRef(null);
-
-  const [channelStatus, setChannelStatus] = useState('');
+  // Global Tracking State
+  const [activeVehicles, setActiveVehicles] = useState({});
+  const [passengerLocation, setPassengerLocation] = useState(null);
+  const [trackedVehicle, setTrackedVehicle] = useState(null);
 
   useEffect(() => {
     fetchScheduledRides();
+
+    // 1. Get passenger's location
+    if (navigator.geolocation) {
+       navigator.geolocation.getCurrentPosition(
+         pos => setPassengerLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+         err => console.warn("Passenger location disabled:", err)
+       );
+    }
+
+    // 2. Subscribe to Global GPS Channel
+    const channelName = 'tracking-global';
+    console.log("Passenger subscribing to:", channelName);
+    const channel = supabase.channel(channelName);
+    
+    channel.on('broadcast', { event: 'location' }, ({ payload }) => {
+       setActiveVehicles(prev => ({
+          ...prev,
+          [payload.id]: payload
+       }));
+    }).subscribe();
+
+    // 3. Cleanup stale vehicles (remove if no signal for 30 seconds)
+    const cleanupInterval = setInterval(() => {
+       setActiveVehicles(prev => {
+          const now = Date.now();
+          const next = { ...prev };
+          let changed = false;
+          Object.keys(next).forEach(id => {
+             if (now - next[id].timestamp > 30000) {
+                 delete next[id];
+                 changed = true;
+             }
+          });
+          return changed ? next : prev;
+       });
+    }, 10000);
+
+    return () => {
+      channel.unsubscribe();
+      clearInterval(cleanupInterval);
+    };
   }, []);
 
   const fetchScheduledRides = async () => {
@@ -76,35 +115,11 @@ export default function Dashboard() {
   };
 
   const handleFindRide = () => {
-    if (!rtoNumber.trim()) return;
-    
-    setIsListening(true);
-    setLiveLocation(null);
-    setChannelStatus('Connecting to Supabase...');
-
-    // Clean up previous channel if searching again
-    if (channelRef.current) {
-      channelRef.current.unsubscribe();
+    if (!rtoNumber.trim()) {
+      setTrackedVehicle(null);
+      return;
     }
-
-    const channelName = `tracking-${rtoNumber.trim().toUpperCase()}`;
-    console.log("Passenger trying to subscribe to:", channelName);
-    const channel = supabase.channel(channelName);
-    
-    channel.on('broadcast', { event: 'location' }, ({ payload }) => {
-       console.log("Passenger received GPS payload:", payload);
-       setLiveLocation(payload);
-       setChannelStatus(`Live signal received at ${new Date().toLocaleTimeString()}`);
-    }).subscribe((status, err) => {
-       console.log("Passenger channel status:", status, err);
-       if (status === 'SUBSCRIBED') {
-         setChannelStatus('Connected! Waiting for driver GPS signal...');
-       } else if (status === 'CHANNEL_ERROR') {
-         setChannelStatus('Error: Could not connect to Supabase Realtime.');
-       }
-    });
-
-    channelRef.current = channel;
+    setTrackedVehicle(rtoNumber.trim().toUpperCase());
   };
 
   const allStops = [...new Set(routes.flatMap(route => route.stops))].sort();
@@ -152,13 +167,21 @@ export default function Dashboard() {
             <input 
               type="text" 
               value={rtoNumber}
-              onChange={(e) => setRtoNumber(e.target.value.toUpperCase())}
+              onChange={(e) => {
+                setRtoNumber(e.target.value.toUpperCase());
+                if (e.target.value === '') setTrackedVehicle(null);
+              }}
               placeholder={t('dashRtoPlaceholder')} 
               className="w-full px-6 py-3.5 rounded-xl font-medium text-lg border border-gray-300 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all uppercase bg-white text-gray-900 shadow-sm"
             />
-            {channelStatus && (
-              <p className={`mt-2 text-sm font-bold ${liveLocation ? 'text-green-600' : 'text-blue-600'}`}>
-                {channelStatus}
+            {trackedVehicle && !activeVehicles[trackedVehicle] && (
+              <p className="mt-2 text-sm font-bold text-red-600">
+                Driver {trackedVehicle} is not currently broadcasting.
+              </p>
+            )}
+            {trackedVehicle && activeVehicles[trackedVehicle] && (
+              <p className="mt-2 text-sm font-bold text-green-600">
+                Tracking {trackedVehicle} in real-time!
               </p>
             )}
           </div>
@@ -166,7 +189,7 @@ export default function Dashboard() {
             onClick={handleFindRide}
             className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-8 py-3.5 rounded-xl font-bold text-lg transition-all shadow-lg shadow-red-200 shrink-0 self-start"
           >
-            {isListening ? 'Listening...' : t('dashFindRideBtn')}
+            {t('dashFindRideBtn')}
           </button>
         </div>
 
@@ -211,14 +234,19 @@ export default function Dashboard() {
       ) : (
         <>
           {/* Show Live Rides (Scheduled + Mock) at the top */}
-          {!isListening && (
+          {!trackedVehicle && (
             <div className="mb-12">
               <LiveBuses buses={combinedRides} />
             </div>
           )}
           
           {/* Show the map below Live Rides */}
-          <LiveMap buses={filteredBuses} liveLocation={liveLocation} />
+          <LiveMap 
+            buses={filteredBuses} 
+            activeVehicles={activeVehicles} 
+            passengerLocation={passengerLocation}
+            trackedVehicle={trackedVehicle}
+          />
         </>
       )}
     </div>

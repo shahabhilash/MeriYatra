@@ -43,18 +43,34 @@ const livePulseIcon = L.divIcon({
   iconAnchor: [0, 0] // Center it precisely on the coordinate
 });
 
-// Helper component to auto-pan the map to the live GPS location
-function AutoCenter({ location }) {
+// Custom HTML Icon for the Passenger
+const passengerIcon = L.divIcon({
+  className: 'custom-passenger-icon',
+  html: `
+    <div style="transform: translate(-50%, -50%); display: inline-flex; align-items: center; justify-content: center; height: 16px; width: 16px; background-color: #3b82f6; border: 2px solid white; border-radius: 9999px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);"></div>
+  `,
+  iconSize: [0, 0],
+  iconAnchor: [0, 0]
+});
+
+// Helper component to auto-pan the map
+function AutoCenter({ location, trackedLocation }) {
   const map = useMap();
   useEffect(() => {
-    if (location && location.lat && location.lng) {
-      map.flyTo([location.lat, location.lng], 16, { animate: true });
+    // Priority 1: Focus on the specifically searched vehicle
+    if (trackedLocation && trackedLocation.lat && trackedLocation.lng) {
+      map.flyTo([trackedLocation.lat, trackedLocation.lng], 16, { animate: true });
+      return;
     }
-  }, [location, map]);
+    // Priority 2: Focus on the passenger's own location
+    if (location && location.lat && location.lng) {
+      map.flyTo([location.lat, location.lng], 14, { animate: true });
+    }
+  }, [location, trackedLocation, map]);
   return null;
 }
 
-export default function LiveMap({ buses = [], liveLocation = null }) {
+export default function LiveMap({ buses = [], activeVehicles = {}, passengerLocation = null, trackedVehicle = null }) {
   const { t } = useLanguage();
   // Center roughly around VIT Bhopal
   const defaultCenter = [23.0775, 76.8513];
@@ -64,12 +80,51 @@ export default function LiveMap({ buses = [], liveLocation = null }) {
       <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('liveMapTitle')}</h2>
       <div className="relative w-full h-[400px] rounded-2xl overflow-hidden border border-gray-300 shadow-inner z-0">
         <MapContainer center={defaultCenter} zoom={14} style={{ height: '100%', width: '100%' }}>
-          <AutoCenter location={liveLocation} />
+          <AutoCenter 
+            location={passengerLocation} 
+            trackedLocation={trackedVehicle ? activeVehicles[trackedVehicle] : null} 
+          />
           
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
+
+          {/* Passenger's Own Location Marker */}
+          {passengerLocation && (
+            <Marker 
+              position={[passengerLocation.lat, passengerLocation.lng]} 
+              icon={passengerIcon}
+              zIndexOffset={900}
+            >
+              <Popup>
+                <div className="font-bold text-blue-700">You are here</div>
+              </Popup>
+            </Marker>
+          )}
+
+          {/* All Global Active Vehicles */}
+          {Object.values(activeVehicles).map((vehicle) => (
+            <Marker 
+              key={vehicle.id}
+              position={[vehicle.lat, vehicle.lng]} 
+              icon={livePulseIcon}
+              zIndexOffset={1000}
+            >
+              <Popup>
+                <div className="font-sans">
+                  <h3 className="font-bold text-gray-900 text-sm mb-1 uppercase">{vehicle.id}</h3>
+                  <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-0.5 rounded capitalize">
+                    {vehicle.vehicleType || 'Vehicle'}
+                  </span>
+                  <div className="mt-2 text-xs text-gray-500">
+                    Speed: {Math.round((vehicle.speed || 0) * 3.6)} km/h
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+
           {buses.map(bus => {
             const isDelayed = bus.status !== 'On Time';
             return (
@@ -94,24 +149,6 @@ export default function LiveMap({ buses = [], liveLocation = null }) {
               </Marker>
             );
           })}
-
-          {/* Realtime GPS Broadcast Marker */}
-          {liveLocation && (
-            <Marker 
-              position={[liveLocation.lat, liveLocation.lng]} 
-              icon={livePulseIcon}
-              zIndexOffset={1000}
-            >
-              <Popup>
-                <div className="font-sans">
-                  <h3 className="font-bold text-gray-900 text-sm mb-1">Live Driver!</h3>
-                  <div className="mt-1 text-xs text-gray-500">
-                    Speed: {Math.round((liveLocation.speed || 0) * 3.6)} km/h
-                  </div>
-                </div>
-              </Popup>
-            </Marker>
-          )}
         </MapContainer>
       </div>
     </div>
