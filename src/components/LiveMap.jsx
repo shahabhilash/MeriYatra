@@ -24,9 +24,24 @@ const createIcon = (color) => {
   });
 };
 
-const iconGreen = createIcon('green');
 const iconRed = createIcon('red');
 const iconBlue = createIcon('blue');
+
+// Custom HTML Icon for the LIVE GPS Tracker
+const livePulseIcon = L.divIcon({
+  className: 'custom-live-icon',
+  html: `
+    <div style="transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 4px; background-color: white; padding: 4px 8px; border-radius: 9999px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid #bbf7d0;">
+      <span style="position: relative; display: flex; height: 10px; width: 10px;">
+        <span style="animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; position: absolute; display: inline-flex; height: 100%; width: 100%; border-radius: 9999px; background-color: #4ade80; opacity: 0.75;"></span>
+        <span style="position: relative; display: inline-flex; border-radius: 9999px; height: 10px; width: 10px; background-color: #22c55e;"></span>
+      </span>
+      <span style="font-size: 11px; font-weight: 800; color: #15803d; letter-spacing: 0.05em;">LIVE</span>
+    </div>
+  `,
+  iconSize: [0, 0], // The size is dictated by the HTML content
+  iconAnchor: [0, 0] // Center it precisely on the coordinate
+});
 
 // Helper component to auto-pan the map to the live GPS location
 function AutoCenter({ location }) {
@@ -84,17 +99,14 @@ export default function LiveMap({ buses = [], liveLocation = null }) {
           {liveLocation && (
             <Marker 
               position={[liveLocation.lat, liveLocation.lng]} 
-              icon={iconGreen}
+              icon={livePulseIcon}
               zIndexOffset={1000}
             >
               <Popup>
                 <div className="font-sans">
                   <h3 className="font-bold text-gray-900 text-sm mb-1">Live Driver!</h3>
-                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 animate-pulse">
-                    Broadcasting GPS
-                  </span>
-                  <div className="mt-2 text-xs text-gray-500">
-                    Just updated.
+                  <div className="mt-1 text-xs text-gray-500">
+                    Speed: {Math.round((liveLocation.speed || 0) * 3.6)} km/h
                   </div>
                 </div>
               </Popup>
