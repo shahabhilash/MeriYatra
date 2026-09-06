@@ -22,6 +22,12 @@ export const dummyRoutes = [
     name: 'Bhopal City Express',
     stops: ['Bairagarh', 'Lalghati', 'Nadira Bus Stand', 'MP Nagar', 'Habibganj / Rani Kamlapati'],
     busesAssigned: ['MP04-BUS-11', 'MP04-AUTO-22'],
+  },
+  {
+    id: 'R-5',
+    name: 'Sehore - Dewas Direct',
+    stops: ['Sehore City', 'Ashta Bypass', 'Sonkatch', 'Dewas Bus Stand'],
+    busesAssigned: ['MP04-BUS-95'],
   }
 ];
 
