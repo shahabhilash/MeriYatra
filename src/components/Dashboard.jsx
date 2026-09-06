@@ -32,27 +32,44 @@ export default function Dashboard() {
   const fetchScheduledRides = async () => {
     setIsFetchingRides(true);
     try {
-      const { data, error } = await supabase
+      // 1. Fetch scheduled rides
+      const { data: rides, error: ridesError } = await supabase
         .from('scheduled_rides')
         .select('*')
         .in('status', ['scheduled', 'active'])
         .order('start_time', { ascending: true });
         
-      if (data) {
-        const formattedRides = data.map(ride => ({
-          id: 'REAL-' + ride.id.substring(0, 4).toUpperCase(),
-          isReal: true,
-          routeId: ride.id,
-          route: `${ride.from_location} - ${ride.to_location}`,
-          status: 'Scheduled',
-          eta: new Date(ride.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-          occupancy: 'N/A',
-          rawTime: ride.start_time
-        }));
+      if (ridesError) throw ridesError;
+
+      if (rides && rides.length > 0) {
+        // 2. Fetch corresponding driver details (RTO & Vehicle Type)
+        const driverIds = rides.map(r => r.driver_id);
+        const { data: details, error: detailsError } = await supabase
+          .from('driver_details')
+          .select('id, rto_number, vehicle_type')
+          .in('id', driverIds);
+
+        // 3. Combine the data
+        const formattedRides = rides.map(ride => {
+          const detail = details?.find(d => d.id === ride.driver_id);
+          return {
+            id: detail?.rto_number || 'DRIVER-' + ride.id.substring(0, 4).toUpperCase(),
+            vehicleType: detail?.vehicle_type || 'bus',
+            isReal: true,
+            routeId: ride.id,
+            route: `${ride.from_location} - ${ride.to_location}`,
+            status: 'Scheduled',
+            eta: new Date(ride.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            occupancy: 'N/A',
+            rawTime: ride.start_time
+          };
+        });
         setScheduledRides(formattedRides);
+      } else {
+        setScheduledRides([]);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching rides:", err);
     } finally {
       setIsFetchingRides(false);
     }

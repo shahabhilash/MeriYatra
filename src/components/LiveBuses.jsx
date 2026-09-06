@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bus, MapPin, Clock } from 'lucide-react';
+import { Bus, MapPin, Clock, Car } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function LiveBuses({ buses = [] }) {
@@ -27,10 +27,21 @@ export default function LiveBuses({ buses = [] }) {
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
                 <div className={`${bus.isReal ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'} p-2.5 rounded-lg`}>
-                  <Bus className="h-5 w-5" />
+                  {bus.vehicleType === 'auto' ? (
+                    <Car className="h-5 w-5" />
+                  ) : (
+                    <Bus className="h-5 w-5" />
+                  )}
                 </div>
                 <div>
-                  <h3 className="text-lg font-extrabold text-gray-900">{bus.isReal ? 'Real Driver' : bus.id}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-extrabold text-gray-900 uppercase">{bus.id}</h3>
+                    {bus.isReal && (
+                      <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-0.5 rounded capitalize">
+                        {bus.vehicleType}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-600 font-medium truncate max-w-[150px]" title={bus.route}>{bus.route}</p>
                 </div>
               </div>
