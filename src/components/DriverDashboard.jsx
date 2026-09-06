@@ -18,6 +18,8 @@ export default function DriverDashboard() {
 
   const watchId = useRef(null);
   const channelRef = useRef(null);
+  const broadcastIntervalRef = useRef(null);
+  const locationRef = useRef(null);
 
   useEffect(() => {
     if (profile?.id) fetchScheduledRides();
@@ -104,26 +106,8 @@ export default function DriverDashboard() {
         const { latitude, longitude, speed } = position.coords;
         const newLocation = { lat: latitude, lng: longitude, speed: speed || 0 };
         
+        locationRef.current = newLocation;
         setLocation(newLocation);
-        console.log("Driver GPS Update:", newLocation);
-
-        // 3. Broadcast to Supabase instantly
-        if (channelRef.current) {
-          channelRef.current.send({
-            type: 'broadcast',
-            event: 'location',
-            payload: {
-              ...newLocation,
-              id: driverDetails.rto_number,
-              vehicleType: driverDetails.vehicle_type,
-              timestamp: Date.now()
-            }
-          }).then((res) => {
-             console.log("Broadcast success:", res);
-          }).catch((err) => {
-             console.error("Broadcast failed:", err);
-          });
-        }
       },
       (err) => {
         console.error("GPS Error:", err);
@@ -136,10 +120,33 @@ export default function DriverDashboard() {
         timeout: 5000
       }
     );
+
+    // 3. Force High-Frequency Broadcasting (Every 2 seconds)
+    // Laptops rarely trigger watchPosition if they aren't physically moving.
+    // This interval forces the broadcast so passengers get instant data!
+    broadcastIntervalRef.current = setInterval(() => {
+      if (locationRef.current && channelRef.current) {
+        channelRef.current.send({
+          type: 'broadcast',
+          event: 'location',
+          payload: {
+            ...locationRef.current,
+            id: driverDetails.rto_number.trim().toUpperCase(),
+            vehicleType: driverDetails.vehicle_type,
+            timestamp: Date.now()
+          }
+        }).catch(err => console.error("Broadcast failed:", err));
+      }
+    }, 2000);
   };
 
   const stopTracking = () => {
     setIsTracking(false);
+    
+    if (broadcastIntervalRef.current) {
+      clearInterval(broadcastIntervalRef.current);
+      broadcastIntervalRef.current = null;
+    }
     
     if (watchId.current) {
       navigator.geolocation.clearWatch(watchId.current);

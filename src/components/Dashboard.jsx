@@ -46,23 +46,25 @@ export default function Dashboard() {
     const channel = supabase.channel(channelName);
     
     channel.on('broadcast', { event: 'location' }, ({ payload }) => {
+       console.log("Passenger received GPS payload:", payload);
        setActiveVehicles(prev => ({
           ...prev,
-          [payload.id]: {
+          [payload.id.trim().toUpperCase()]: {
             ...payload,
             localTimestamp: Date.now() // Stamp it with the passenger's clock to prevent device clock drift bugs
           }
        }));
     }).subscribe();
 
-    // 3. Cleanup stale vehicles (remove if no signal for 30 seconds)
+    // 3. Cleanup stale vehicles (remove if no signal for 120 seconds to prevent background tab throttling)
     const cleanupInterval = setInterval(() => {
        setActiveVehicles(prev => {
           const now = Date.now();
           const next = { ...prev };
           let changed = false;
           Object.keys(next).forEach(id => {
-             if (now - next[id].localTimestamp > 30000) {
+             // 120000ms = 2 minutes. Browsers throttle background tabs, so we need a high tolerance!
+             if (now - next[id].localTimestamp > 120000) {
                  delete next[id];
                  changed = true;
              }
