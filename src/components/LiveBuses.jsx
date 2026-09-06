@@ -23,28 +23,30 @@ export default function LiveBuses({ buses = [] }) {
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {buses.map((bus) => (
-          <div key={bus.id} className="glass-panel p-5 hover:-translate-y-1 transition-transform duration-300">
+          <div key={bus.id} className={`glass-panel p-5 hover:-translate-y-1 transition-transform duration-300 border-2 ${bus.isReal ? 'border-red-200 bg-red-50/50' : 'border-transparent'}`}>
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
-                <div className="bg-amber-100 p-2.5 rounded-lg">
-                  <Bus className="h-5 w-5 text-amber-600" />
+                <div className={`${bus.isReal ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'} p-2.5 rounded-lg`}>
+                  <Bus className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-extrabold text-gray-900">{bus.id}</h3>
-                  <p className="text-sm text-gray-600 font-medium">{bus.route}</p>
+                  <h3 className="text-lg font-extrabold text-gray-900">{bus.isReal ? 'Real Driver' : bus.id}</h3>
+                  <p className="text-sm text-gray-600 font-medium truncate max-w-[150px]" title={bus.route}>{bus.route}</p>
                 </div>
               </div>
               <span className={`text-sm font-bold px-3 py-1.5 rounded-full ${
-                bus.status === 'On Time' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+                bus.status === 'On Time' ? 'bg-green-100 text-green-800 border border-green-200' : 
+                bus.status === 'Scheduled' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                'bg-red-100 text-red-800 border border-red-200'
               }`}>
-                {bus.status === 'On Time' ? t('statusOnTime') : t('statusDelayed')}
+                {bus.status === 'Scheduled' ? 'Scheduled' : bus.status === 'On Time' ? t('statusOnTime') : t('statusDelayed')}
               </span>
             </div>
             
             <div className="space-y-3">
               <div className="flex items-center text-lg text-gray-800">
                 <Clock className="h-5 w-5 mr-2 text-red-600" />
-                <span>{t('etaLabel')} <strong className="text-red-700 text-xl">{bus.eta}</strong></span>
+                <span>{bus.status === 'Scheduled' ? 'Starts at' : t('etaLabel')} <strong className="text-red-700 text-xl">{bus.eta}</strong></span>
               </div>
               <div className="flex items-center text-sm text-gray-600">
                 <MapPin className="h-4 w-4 mr-2 text-gray-400" />

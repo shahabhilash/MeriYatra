@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../services/supabase';
-import { MapPin, Navigation, SignalHigh, AlertTriangle } from 'lucide-react';
+import { MapPin, Navigation, SignalHigh, AlertTriangle, CalendarClock, Clock, CheckCircle2 } from 'lucide-react';
+import AutocompleteInput from './AutocompleteInput';
 
 export default function DriverDashboard() {
   const { profile, driverDetails } = useAuth();
@@ -9,14 +10,65 @@ export default function DriverDashboard() {
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
   
+  // Scheduling State
+  const [scheduledRides, setScheduledRides] = useState([]);
+  const [scheduleForm, setScheduleForm] = useState({ from: '', to: '', time: '' });
+  const [isScheduling, setIsScheduling] = useState(false);
+  const [scheduleMsg, setScheduleMsg] = useState('');
+
   const watchId = useRef(null);
   const channelRef = useRef(null);
 
   useEffect(() => {
+    if (profile?.id) fetchScheduledRides();
     return () => {
       stopTracking();
     };
-  }, []);
+  }, [profile]);
+
+  const fetchScheduledRides = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('scheduled_rides')
+        .select('*')
+        .eq('driver_id', profile.id)
+        .order('start_time', { ascending: true });
+      if (error) throw error;
+      if (data) setScheduledRides(data);
+    } catch (err) {
+      console.error("Error fetching rides:", err);
+    }
+  };
+
+  const handleScheduleRide = async (e) => {
+    e.preventDefault();
+    if (!scheduleForm.from || !scheduleForm.to || !scheduleForm.time) {
+      setScheduleMsg("Please fill in all fields.");
+      return;
+    }
+    
+    setIsScheduling(true);
+    setScheduleMsg('');
+    try {
+      const { error } = await supabase.from('scheduled_rides').insert([{
+        driver_id: profile.id,
+        from_location: scheduleForm.from,
+        to_location: scheduleForm.to,
+        start_time: new Date(scheduleForm.time).toISOString()
+      }]);
+      
+      if (error) throw error;
+      setScheduleForm({ from: '', to: '', time: '' });
+      setScheduleMsg("Ride scheduled successfully!");
+      fetchScheduledRides();
+    } catch (err) {
+      console.error(err);
+      setScheduleMsg("Error scheduling ride.");
+    } finally {
+      setIsScheduling(false);
+      setTimeout(() => setScheduleMsg(''), 3000);
+    }
+  };
 
   const startTracking = async () => {
     if (!driverDetails?.rto_number) {
@@ -166,6 +218,88 @@ export default function DriverDashboard() {
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-green-500" />
                 Lng: {location.lng.toFixed(4)}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Schedule a Ride Section */}
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-gray-50 border-b border-gray-100 p-6">
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <CalendarClock className="h-6 w-6 text-red-600" />
+            Schedule an Upcoming Ride
+          </h2>
+          <p className="text-gray-500 text-sm mt-1">Passengers will see this ride when they search this route.</p>
+        </div>
+        
+        <div className="p-8">
+          <form onSubmit={handleScheduleRide} className="flex flex-col md:flex-row items-end gap-4 mb-8">
+            <div className="w-full">
+              <AutocompleteInput 
+                value={scheduleForm.from}
+                onChange={(val) => setScheduleForm({...scheduleForm, from: val})}
+                placeholder="Where from?"
+                label="Pickup"
+              />
+            </div>
+            <div className="w-full">
+              <AutocompleteInput 
+                value={scheduleForm.to}
+                onChange={(val) => setScheduleForm({...scheduleForm, to: val})}
+                placeholder="Where to?"
+                label="Dropoff"
+              />
+            </div>
+            <div className="w-full">
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Date & Time</label>
+              <input 
+                type="datetime-local" 
+                value={scheduleForm.time}
+                onChange={(e) => setScheduleForm({...scheduleForm, time: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+            </div>
+            <button 
+              type="submit" 
+              disabled={isScheduling}
+              className="w-full md:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-xl shrink-0 transition-colors disabled:opacity-50"
+            >
+              {isScheduling ? 'Saving...' : 'Schedule'}
+            </button>
+          </form>
+
+          {scheduleMsg && (
+            <div className="mb-6 text-center text-sm font-bold text-green-600 bg-green-50 py-3 rounded-lg">
+              {scheduleMsg}
+            </div>
+          )}
+
+          {/* List of scheduled rides */}
+          {scheduledRides.length > 0 && (
+            <div>
+              <h3 className="font-bold text-gray-900 mb-4 border-b pb-2">Your Upcoming Rides</h3>
+              <div className="space-y-4">
+                {scheduledRides.map(ride => (
+                  <div key={ride.id} className="flex flex-col sm:flex-row justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100 gap-4">
+                    <div className="flex items-center gap-4 w-full">
+                      <div className="bg-red-100 p-3 rounded-full text-red-600">
+                        <MapPin className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900">{ride.from_location} &rarr; {ride.to_location}</p>
+                        <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                          <Clock className="h-4 w-4" />
+                          {new Date(ride.start_time).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="shrink-0 bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> {ride.status.toUpperCase()}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           )}

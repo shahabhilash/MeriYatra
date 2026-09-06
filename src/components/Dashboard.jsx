@@ -14,12 +14,49 @@ export default function Dashboard() {
   const [toStop, setToStop] = useState('');
   const [rtoNumber, setRtoNumber] = useState('');
   
+  // Real Scheduled Rides State
+  const [scheduledRides, setScheduledRides] = useState([]);
+  const [isFetchingRides, setIsFetchingRides] = useState(true);
+  
   // Live GPS Tracking State
   const [liveLocation, setLiveLocation] = useState(null);
   const [isListening, setIsListening] = useState(false);
   const channelRef = useRef(null);
 
   const [channelStatus, setChannelStatus] = useState('');
+
+  useEffect(() => {
+    fetchScheduledRides();
+  }, []);
+
+  const fetchScheduledRides = async () => {
+    setIsFetchingRides(true);
+    try {
+      const { data, error } = await supabase
+        .from('scheduled_rides')
+        .select('*')
+        .in('status', ['scheduled', 'active'])
+        .order('start_time', { ascending: true });
+        
+      if (data) {
+        const formattedRides = data.map(ride => ({
+          id: 'REAL-' + ride.id.substring(0, 4).toUpperCase(),
+          isReal: true,
+          routeId: ride.id,
+          route: `${ride.from_location} - ${ride.to_location}`,
+          status: 'Scheduled',
+          eta: new Date(ride.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+          occupancy: 'N/A',
+          rawTime: ride.start_time
+        }));
+        setScheduledRides(formattedRides);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsFetchingRides(false);
+    }
+  };
 
   const handleFindRide = () => {
     if (!rtoNumber.trim()) return;
@@ -70,6 +107,17 @@ export default function Dashboard() {
   }).map(r => r.id);
 
   const filteredBuses = buses.filter(bus => matchingRouteIds.includes(bus.routeId));
+
+  // Filter Real Scheduled Rides based on the from/to search text
+  const filteredScheduled = scheduledRides.filter(ride => {
+    if (!fromStop && !toStop) return true;
+    const hasFrom = fromStop ? ride.route.toLowerCase().includes(fromStop.toLowerCase()) : true;
+    const hasTo = toStop ? ride.route.toLowerCase().includes(toStop.toLowerCase()) : true;
+    return hasFrom && hasTo;
+  });
+
+  // Combine them, putting real scheduled rides at the top
+  const combinedRides = [...filteredScheduled, ...filteredBuses];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -145,15 +193,15 @@ export default function Dashboard() {
         <div className="py-20 text-center text-red-500 font-medium">{t('dashErrorData')} {error}</div>
       ) : (
         <>
-          {/* Show the map first so it is immediately visible */}
-          <LiveMap buses={filteredBuses} liveLocation={liveLocation} />
-          
-          {/* Hide mock buses if we are actively tracking a real driver */}
+          {/* Show Live Rides (Scheduled + Mock) at the top */}
           {!isListening && (
-            <div className="mt-12">
-              <LiveBuses buses={filteredBuses} />
+            <div className="mb-12">
+              <LiveBuses buses={combinedRides} />
             </div>
           )}
+          
+          {/* Show the map below Live Rides */}
+          <LiveMap buses={filteredBuses} liveLocation={liveLocation} />
         </>
       )}
     </div>
