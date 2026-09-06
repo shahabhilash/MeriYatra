@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import LiveBuses from './LiveBuses';
 import LiveMap from './LiveMap';
 import AutocompleteInput from './AutocompleteInput';
