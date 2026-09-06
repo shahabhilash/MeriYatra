@@ -48,7 +48,10 @@ export default function Dashboard() {
     channel.on('broadcast', { event: 'location' }, ({ payload }) => {
        setActiveVehicles(prev => ({
           ...prev,
-          [payload.id]: payload
+          [payload.id]: {
+            ...payload,
+            localTimestamp: Date.now() // Stamp it with the passenger's clock to prevent device clock drift bugs
+          }
        }));
     }).subscribe();
 
@@ -59,7 +62,7 @@ export default function Dashboard() {
           const next = { ...prev };
           let changed = false;
           Object.keys(next).forEach(id => {
-             if (now - next[id].timestamp > 30000) {
+             if (now - next[id].localTimestamp > 30000) {
                  delete next[id];
                  changed = true;
              }
@@ -95,7 +98,7 @@ export default function Dashboard() {
     };
 
     calculateETA();
-  }, [trackedVehicle, activeVehicles[trackedVehicle]?.timestamp, etaDestinationCoords]);
+  }, [trackedVehicle, activeVehicles[trackedVehicle]?.localTimestamp, etaDestinationCoords]);
 
   const fetchScheduledRides = async () => {
     setIsFetchingRides(true);
