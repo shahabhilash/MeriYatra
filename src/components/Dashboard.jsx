@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import LiveBuses from './LiveBuses';
 import LiveMap from './LiveMap';
 import AutocompleteInput from './AutocompleteInput';
-import { Route, MapPin } from 'lucide-react';
+import { Route, MapPin, Navigation, Clock } from 'lucide-react';
 import { useBuses } from '../hooks/useBuses';
 import { useLanguage } from '../context/LanguageContext';
 import { supabase } from '../services/supabase';
@@ -22,6 +22,12 @@ export default function Dashboard() {
   const [activeVehicles, setActiveVehicles] = useState({});
   const [passengerLocation, setPassengerLocation] = useState(null);
   const [trackedVehicle, setTrackedVehicle] = useState(null);
+
+  // ETA State
+  const [etaDestinationName, setEtaDestinationName] = useState('');
+  const [etaDestinationCoords, setEtaDestinationCoords] = useState(null);
+  const [liveEtaSeconds, setLiveEtaSeconds] = useState(null);
+  const [isCalculatingEta, setIsCalculatingEta] = useState(false);
 
   useEffect(() => {
     fetchScheduledRides();
@@ -67,6 +73,29 @@ export default function Dashboard() {
       clearInterval(cleanupInterval);
     };
   }, []);
+
+  // OSRM Routing Effect
+  useEffect(() => {
+    const calculateETA = async () => {
+      const vehicle = activeVehicles[trackedVehicle];
+      if (!vehicle || !etaDestinationCoords) return;
+      
+      setIsCalculatingEta(true);
+      try {
+        const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${vehicle.lng},${vehicle.lat};${etaDestinationCoords.lon},${etaDestinationCoords.lat}?overview=false`);
+        const data = await res.json();
+        if (data.routes && data.routes.length > 0) {
+          setLiveEtaSeconds(data.routes[0].duration);
+        }
+      } catch (err) {
+        console.error("OSRM Routing Error:", err);
+      } finally {
+        setIsCalculatingEta(false);
+      }
+    };
+
+    calculateETA();
+  }, [trackedVehicle, activeVehicles[trackedVehicle]?.timestamp, etaDestinationCoords]);
 
   const fetchScheduledRides = async () => {
     setIsFetchingRides(true);
@@ -169,7 +198,11 @@ export default function Dashboard() {
               value={rtoNumber}
               onChange={(e) => {
                 setRtoNumber(e.target.value.toUpperCase());
-                if (e.target.value === '') setTrackedVehicle(null);
+                if (e.target.value === '') {
+                  setTrackedVehicle(null);
+                  setEtaDestinationCoords(null);
+                  setLiveEtaSeconds(null);
+                }
               }}
               placeholder={t('dashRtoPlaceholder')} 
               className="w-full px-6 py-3.5 rounded-xl font-medium text-lg border border-gray-300 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all uppercase bg-white text-gray-900 shadow-sm"
@@ -192,6 +225,34 @@ export default function Dashboard() {
             {t('dashFindRideBtn')}
           </button>
         </div>
+
+        {/* Dynamic ETA Router */}
+        {trackedVehicle && (
+          <div className="mt-8 bg-red-50 border border-red-100 rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6 justify-between shadow-sm">
+            <div className="flex-1 w-full">
+              <h3 className="font-bold text-red-900 mb-2 flex items-center gap-2">
+                <Navigation className="h-5 w-5" /> Calculate Live ETA for {trackedVehicle}
+              </h3>
+              <AutocompleteInput 
+                value={etaDestinationName}
+                onChange={setEtaDestinationName}
+                onSelectLocation={(loc) => setEtaDestinationCoords(loc)}
+                placeholder="Where do you want to go?"
+              />
+            </div>
+            
+            {liveEtaSeconds !== null && (
+              <div className="bg-white px-8 py-4 rounded-xl shadow-sm text-center min-w-[200px] border border-red-200">
+                <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1 flex items-center justify-center gap-1">
+                  <Clock className="h-4 w-4" /> Estimated Time
+                </p>
+                <div className="text-4xl font-black text-red-600">
+                  {Math.ceil(liveEtaSeconds / 60)} <span className="text-xl">min</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Route Selector (From/To) */}
         <div className="mt-12 max-w-3xl mx-auto glass-panel p-4 flex flex-col md:flex-row items-center gap-4">

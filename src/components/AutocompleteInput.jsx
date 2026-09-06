@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function AutocompleteInput({ value, onChange, placeholder, label, icon }) {
+export default function AutocompleteInput({ value, onChange, onSelectLocation, placeholder, label, icon }) {
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -32,7 +32,11 @@ export default function AutocompleteInput({ value, onChange, placeholder, label,
       try {
         const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&addressdetails=1&limit=5&countrycodes=in`);
         const data = await response.json();
-        const formattedSuggestions = data.map(item => item.display_name);
+        const formattedSuggestions = data.map(item => ({
+          name: item.display_name,
+          lat: item.lat,
+          lon: item.lon
+        }));
         setSuggestions(formattedSuggestions);
       } catch (error) {
         console.error("Error fetching locations:", error);
@@ -90,13 +94,16 @@ export default function AutocompleteInput({ value, onChange, placeholder, label,
                   key={index}
                   onClick={() => {
                     // Extract main name from display_name
-                    const shortName = option.split(',')[0];
+                    const shortName = option.name.split(',')[0];
                     onChange(shortName);
+                    if (onSelectLocation) {
+                      onSelectLocation(option);
+                    }
                     setIsOpen(false);
                   }}
                   className="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-red-50 hover:text-red-700 cursor-pointer transition-colors border-b border-gray-50 last:border-0 leading-snug"
                 >
-                  {option}
+                  {option.name}
                 </li>
               ))}
             </ul>
