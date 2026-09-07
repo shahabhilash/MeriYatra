@@ -8,7 +8,7 @@ export default function AboutPage() {
         <div className="inline-flex items-center justify-center p-4 bg-red-100 rounded-full mb-6">
           <Bus className="h-12 w-12 text-red-600" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">About MeriYatra</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">About मेरी yatra</h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
           Revolutionizing daily commutes with <span className="text-red-600 font-semibold">Real-Time Global Tracking</span> and Smart ETA Routing.
         </p>
@@ -21,10 +21,10 @@ export default function AboutPage() {
           </div>
           <div className="flex items-center gap-4 mb-6">
             <ShieldCheck className="h-8 w-8 text-red-600" />
-            <h2 className="text-2xl font-bold text-gray-900">What is MeriYatra?</h2>
+            <h2 className="text-2xl font-bold text-gray-900">What is मेरी yatra?</h2>
           </div>
           <p className="text-gray-600 leading-relaxed text-lg relative z-10">
-            MeriYatra is a next-generation public transit ecosystem built to bridge the gap between local drivers (autos and buses) and daily commuters. By leveraging ultra-low latency WebSockets, we provide a seamless, Uber-like tracking experience directly on the web. Passengers can instantly see every active vehicle around them, track specific rides, and get highly accurate arrival times based on live traffic data.
+            मेरी yatra is a next-generation public transit ecosystem built to bridge the gap between local drivers (autos and buses) and daily commuters. By leveraging ultra-low latency WebSockets, we provide a seamless, Uber-like tracking experience directly on the web. Passengers can instantly see every active vehicle around them, track specific rides, and get highly accurate arrival times based on live traffic data.
           </p>
         </div>
       </div>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120">
+  <!-- Solid orange circle behind yatra -->
+  <circle cx="260" cy="60" r="55" fill="#f26e24" />
+  
+  <!-- Hindi text "मेरी" -->
+  <text x="180" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="bold" font-size="64" fill="#f26e24" text-anchor="end">मेरी</text>
+  
+  <!-- English text "yatra" -->
+  <text x="215" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="bold" font-size="64" fill="#ffffff">yatra</text>
+</svg>

@@ -19,13 +19,8 @@ export default function Navbar() {
     <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-            <div className="bg-red-600 p-2 rounded-xl">
-              <Bus className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-red-700">
-              MeriYatra
-            </span>
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/logo.svg" alt="मेरी yatra" className="h-10 w-auto object-contain" />
           </Link>
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-gray-700 hover:text-red-600 font-medium transition-colors">{t('navDashboard')}</Link>
