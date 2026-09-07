@@ -22,6 +22,22 @@ export default function Dashboard() {
   const [activeVehicles, setActiveVehicles] = useState({});
   const [passengerLocation, setPassengerLocation] = useState(null);
   const [trackedVehicle, setTrackedVehicle] = useState(null);
+  const [locationError, setLocationError] = useState(false);
+
+  const requestLocation = () => {
+    if (navigator.geolocation) {
+       navigator.geolocation.getCurrentPosition(
+         pos => {
+           setPassengerLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+           setLocationError(false);
+         },
+         err => {
+           console.warn("Passenger location disabled:", err);
+           setLocationError(true);
+         }
+       );
+    }
+  };
 
   // ETA State
   const [etaDestinationName, setEtaDestinationName] = useState('');
@@ -33,12 +49,7 @@ export default function Dashboard() {
     fetchScheduledRides();
 
     // 1. Get passenger's location
-    if (navigator.geolocation) {
-       navigator.geolocation.getCurrentPosition(
-         pos => setPassengerLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-         err => console.warn("Passenger location disabled:", err)
-       );
-    }
+    requestLocation();
 
     // 2. Subscribe to Global GPS Channel
     const channelName = 'tracking-global';
@@ -303,6 +314,24 @@ export default function Dashboard() {
           {!trackedVehicle && (
             <div className="mb-12">
               <LiveBuses buses={combinedRides} />
+            </div>
+          )}
+          
+          {/* Location Retry Prompt */}
+          {locationError && !passengerLocation && (
+            <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="bg-red-100 p-2 rounded-lg">
+                  <MapPin className="h-6 w-6 text-red-600" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900">Location Access Disabled</h4>
+                  <p className="text-sm text-gray-600">Please click the lock icon in your address bar to allow location access, then retry to see your live position.</p>
+                </div>
+              </div>
+              <button onClick={requestLocation} className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-bold whitespace-nowrap transition-colors shadow-sm">
+                Retry Access
+              </button>
             </div>
           )}
           
