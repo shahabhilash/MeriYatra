@@ -1,16 +1,20 @@
 import React from 'react';
 import { ShieldCheck, MapPin, Bus, Lightbulb, Cpu, Code, Radio, Clock, CalendarCheck } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function AboutPage() {
+  const { t } = useLanguage();
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center mb-16 pt-10">
         <div className="inline-flex items-center justify-center p-4 bg-red-100 rounded-full mb-6">
           <Bus className="h-12 w-12 text-red-600" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">About मेरी yatra</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">{t('aboutTitleText')}</h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          Revolutionizing daily commutes with <span className="text-red-600 font-semibold">Real-Time Global Tracking</span> and Smart ETA Routing.
+          {t('aboutHeroSub1')}
+          <span className="text-red-600 font-semibold">{t('aboutHeroSub2')}</span>
+          {t('aboutHeroSub3')}
         </p>
       </div>
 
@@ -21,17 +25,17 @@ export default function AboutPage() {
           </div>
           <div className="flex items-center gap-4 mb-6">
             <ShieldCheck className="h-8 w-8 text-red-600" />
-            <h2 className="text-2xl font-bold text-gray-900">What is मेरी yatra?</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{t('whatIsTitle')}</h2>
           </div>
           <p className="text-gray-600 leading-relaxed text-lg relative z-10">
-            मेरी yatra is a next-generation public transit ecosystem built to bridge the gap between local drivers (autos and buses) and daily commuters. By leveraging ultra-low latency WebSockets, we provide a seamless, Uber-like tracking experience directly on the web. Passengers can instantly see every active vehicle around them, track specific rides, and get highly accurate arrival times based on live traffic data.
+            {t('projectOverviewText')}
           </p>
         </div>
       </div>
 
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-extrabold text-gray-900">Core Features</h2>
-        <p className="text-gray-500 mt-2">What makes our platform powerful</p>
+        <h2 className="text-3xl font-extrabold text-gray-900">{t('coreFeaturesTitle')}</h2>
+        <p className="text-gray-500 mt-2">{t('coreFeaturesSub')}</p>
       </div>
 
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 mb-20">
@@ -39,9 +43,9 @@ export default function AboutPage() {
           <div className="bg-blue-100 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
             <Radio className="h-7 w-7 text-blue-600" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-3">Global Live Tracking</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-3">{t('feat1Title')}</h3>
           <p className="text-gray-600 leading-relaxed">
-            The moment you open the app, it locates you and displays <strong>every active driver</strong> within your city in real-time. Watch multiple vehicles move simultaneously on a unified global map.
+            {t('feat1Desc')}
           </p>
         </div>
         
@@ -49,9 +53,9 @@ export default function AboutPage() {
           <div className="bg-green-100 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
             <Clock className="h-7 w-7 text-green-600" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-3">Smart ETA Routing Engine</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-3">{t('feat2Title')}</h3>
           <p className="text-gray-600 leading-relaxed">
-            Powered by the Open Source Routing Machine (OSRM). Select a destination, and our engine will calculate the exact driving time from the driver's <strong>live moving coordinate</strong> to you, updating every second!
+            {t('feat2Desc')}
           </p>
         </div>
 
@@ -59,9 +63,9 @@ export default function AboutPage() {
           <div className="bg-purple-100 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
             <CalendarCheck className="h-7 w-7 text-purple-600" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-3">Instant Ride Scheduling</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-3">{t('feat3Title')}</h3>
           <p className="text-gray-600 leading-relaxed">
-            Drivers can schedule upcoming routes through their dashboard. Passengers searching for specific locations will instantly see these scheduled rides pushed to the very top of their results.
+            {t('feat3Desc')}
           </p>
         </div>
 
@@ -69,9 +73,9 @@ export default function AboutPage() {
           <div className="bg-red-100 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
             <Code className="h-7 w-7 text-red-600" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-3">Modern Tech Stack</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-3">{t('feat4Title')}</h3>
           <p className="text-gray-600 leading-relaxed">
-            Built with <strong>React + Vite</strong> for lightning-fast UI, <strong>TailwindCSS</strong> for premium responsive design, <strong>Leaflet</strong> for mapping, and <strong>Supabase Realtime</strong> for sub-second database broadcasting.
+            {t('feat4Desc')}
           </p>
         </div>
       </div>

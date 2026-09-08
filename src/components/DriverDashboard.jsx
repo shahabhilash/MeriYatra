@@ -3,9 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../services/supabase';
 import { MapPin, Navigation, SignalHigh, AlertTriangle, CalendarClock, Clock, CheckCircle2 } from 'lucide-react';
 import AutocompleteInput from './AutocompleteInput';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function DriverDashboard() {
   const { profile, driverDetails } = useAuth();
+  const { t } = useLanguage();
   const [isTracking, setIsTracking] = useState(false);
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
@@ -168,18 +170,18 @@ export default function DriverDashboard() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Driver Dashboard</h1>
-        <p className="text-gray-500">Broadcast your live location to passengers</p>
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-2">{t('driverDashTitle')}</h1>
+        <p className="text-gray-500">{t('driverDashSub')}</p>
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-8">
         <div className="bg-gray-50 border-b border-gray-100 p-6 flex justify-between items-center flex-wrap gap-4">
           <div>
-            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Vehicle RTO</p>
+            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">{t('vehRto')}</p>
             <p className="text-2xl font-bold text-gray-900 uppercase">{driverDetails.rto_number}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Type</p>
+            <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">{t('vehType')}</p>
             <p className="text-lg font-medium text-gray-800 capitalize">{driverDetails.vehicle_type}</p>
           </div>
         </div>
@@ -197,12 +199,10 @@ export default function DriverDashboard() {
           </div>
 
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {isTracking ? 'Broadcasting Live Location...' : 'Ready to Start Trip?'}
+            {isTracking ? t('broadcastingLive') : t('readyToStart')}
           </h2>
           <p className="text-gray-500 mb-8 max-w-md mx-auto">
-            {isTracking 
-              ? 'Passengers searching for your RTO number can now see you moving on their map in real-time.' 
-              : 'Click start to begin broadcasting your GPS coordinates to waiting passengers.'}
+            {isTracking ? t('passengersCanSee') : t('clickStartToBegin')}
           </p>
 
           {isTracking ? (
@@ -210,14 +210,14 @@ export default function DriverDashboard() {
               onClick={stopTracking}
               className="bg-red-100 hover:bg-red-200 text-red-700 px-8 py-4 rounded-xl font-bold text-lg transition-colors w-full sm:w-auto"
             >
-              Stop Tracking
+              {t('stopTrackingBtn')}
             </button>
           ) : (
             <button 
               onClick={startTracking}
               className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-colors shadow-lg shadow-green-200 w-full sm:w-auto"
             >
-              Start Trip
+              {t('startTripBtn')}
             </button>
           )}
 
@@ -241,9 +241,9 @@ export default function DriverDashboard() {
         <div className="bg-gray-50 border-b border-gray-100 p-6">
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             <CalendarClock className="h-6 w-6 text-red-600" />
-            Schedule an Upcoming Ride
+            {t('scheduleUpcomingRide')}
           </h2>
-          <p className="text-gray-500 text-sm mt-1">Passengers will see this ride when they search this route.</p>
+          <p className="text-gray-500 text-sm mt-1">{t('scheduleDesc')}</p>
         </div>
         
         <div className="p-8">
@@ -252,20 +252,20 @@ export default function DriverDashboard() {
               <AutocompleteInput 
                 value={scheduleForm.from}
                 onChange={(val) => setScheduleForm({...scheduleForm, from: val})}
-                placeholder="Where from?"
-                label="Pickup"
+                placeholder={t('whereFrom')}
+                label={t('pickup')}
               />
             </div>
             <div className="w-full">
               <AutocompleteInput 
                 value={scheduleForm.to}
                 onChange={(val) => setScheduleForm({...scheduleForm, to: val})}
-                placeholder="Where to?"
-                label="Dropoff"
+                placeholder={t('whereTo')}
+                label={t('dropoff')}
               />
             </div>
             <div className="w-full">
-              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Date & Time</label>
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{t('dateTime')}</label>
               <input 
                 type="datetime-local" 
                 value={scheduleForm.time}
@@ -278,7 +278,7 @@ export default function DriverDashboard() {
               disabled={isScheduling}
               className="w-full md:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-xl shrink-0 transition-colors disabled:opacity-50"
             >
-              {isScheduling ? 'Saving...' : 'Schedule'}
+              {isScheduling ? t('savingBtn') : t('scheduleBtn')}
             </button>
           </form>
 
@@ -291,7 +291,7 @@ export default function DriverDashboard() {
           {/* List of scheduled rides */}
           {scheduledRides.length > 0 && (
             <div>
-              <h3 className="font-bold text-gray-900 mb-4 border-b pb-2">Your Upcoming Rides</h3>
+              <h3 className="font-bold text-gray-900 mb-4 border-b pb-2">{t('upcomingRides')}</h3>
               <div className="space-y-4">
                 {scheduledRides.map(ride => (
                   <div key={ride.id} className="flex flex-col sm:flex-row justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100 gap-4">

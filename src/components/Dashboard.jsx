@@ -225,12 +225,12 @@ export default function Dashboard() {
             />
             {trackedVehicle && !activeVehicles[trackedVehicle] && (
               <p className="mt-2 text-sm font-bold text-red-600">
-                Driver {trackedVehicle} is not currently broadcasting.
+                {t('driverNotBroadcasting').replace('{id}', trackedVehicle)}
               </p>
             )}
             {trackedVehicle && activeVehicles[trackedVehicle] && (
               <p className="mt-2 text-sm font-bold text-green-600">
-                Tracking {trackedVehicle} in real-time!
+                {t('driverTrackingLive').replace('{id}', trackedVehicle)}
               </p>
             )}
           </div>
@@ -247,23 +247,23 @@ export default function Dashboard() {
           <div className="mt-8 bg-red-50 border border-red-100 rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6 justify-between shadow-sm">
             <div className="flex-1 w-full">
               <h3 className="font-bold text-red-900 mb-2 flex items-center gap-2">
-                <Navigation className="h-5 w-5" /> Calculate Live ETA for {trackedVehicle}
+                <Navigation className="h-5 w-5" /> {t('calcLiveEta').replace('{id}', trackedVehicle)}
               </h3>
               <AutocompleteInput 
                 value={etaDestinationName}
                 onChange={setEtaDestinationName}
                 onSelectLocation={(loc) => setEtaDestinationCoords(loc)}
-                placeholder="Where do you want to go?"
+                placeholder={t('whereToGo')}
               />
             </div>
             
             {liveEtaSeconds !== null && (
               <div className="bg-white px-8 py-4 rounded-xl shadow-sm text-center min-w-[200px] border border-red-200">
                 <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1 flex items-center justify-center gap-1">
-                  <Clock className="h-4 w-4" /> Estimated Time
+                  <Clock className="h-4 w-4" /> {t('estimatedTime')}
                 </p>
                 <div className="text-4xl font-black text-red-600">
-                  {Math.ceil(liveEtaSeconds / 60)} <span className="text-xl">min</span>
+                  {Math.ceil(liveEtaSeconds / 60)} <span className="text-xl">{t('minLabel')}</span>
                 </div>
               </div>
             )}
@@ -325,12 +325,12 @@ export default function Dashboard() {
                   <MapPin className="h-6 w-6 text-red-600" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900">Location Access Disabled</h4>
-                  <p className="text-sm text-gray-600">Please click the lock icon in your address bar to allow location access, then retry to see your live position.</p>
+                  <h4 className="font-bold text-gray-900">{t('locAccessDisabled')}</h4>
+                  <p className="text-sm text-gray-600">{t('locAccessDesc')}</p>
                 </div>
               </div>
               <button onClick={requestLocation} className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-bold whitespace-nowrap transition-colors shadow-sm">
-                Retry Access
+                {t('retryAccess')}
               </button>
             </div>
           )}
