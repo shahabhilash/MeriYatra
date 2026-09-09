@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="public/logo.png" alt="मेरी yatra Logo" width="150"/>
   <h1>मेरी yatra (MeriYatra)</h1>
   <p><strong>Next-Generation Real-Time Public Transit Ecosystem</strong></p>
 </div>
