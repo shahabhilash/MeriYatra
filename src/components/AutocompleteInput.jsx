@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function AutocompleteInput({ value, onChange, onSelectLocation, placeholder, label, icon }) {
+export default function AutocompleteInput({ value, onChange, onSelectLocation, placeholder, label, icon, inputId }) {
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
@@ -57,8 +57,9 @@ export default function AutocompleteInput({ value, onChange, onSelectLocation, p
         </div>
       )}
       <div className="flex-grow relative">
-        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{label}</label>
+        <label htmlFor={inputId} className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{label}</label>
         <input 
+          id={inputId}
           type="text"
           value={value}
           onChange={(e) => {

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bus, User, Key, Mail, Car, FileText, Upload, AlertCircle, Loader2 } from 'lucide-react';
+import { User, Key, Mail, Car, FileText, Upload, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../context/AuthContext';
+import Logo from '../components/Logo';
 
 export default function LoginPage() {
   const { t } = useLanguage();
@@ -17,6 +18,8 @@ export default function LoginPage() {
   // Form states
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [docName, setDocName] = useState('');
   const [vehicleType, setVehicleType] = useState('bus');
   const [rtoNumber, setRtoNumber] = useState('');
   
@@ -100,12 +103,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center mb-4">
-          <div className="bg-red-600 p-3 rounded-2xl shadow-lg">
-            <Bus className="h-8 w-8 text-white" />
-          </div>
+          <Logo size="lg" />
         </div>
         <h2 className="mt-2 text-center text-3xl font-extrabold text-gray-900">
           {mode === 'login' ? t('authSignIn') : t('authRegister')}
@@ -113,14 +114,14 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-2xl sm:px-10 border border-gray-100 relative overflow-hidden">
+        <div className="bg-white py-8 px-4 shadow rounded-2xl sm:px-10 border border-gray-100 relative overflow-hidden">
           
           {/* Role Toggle Switch */}
           <div className="flex justify-center mb-8 relative z-10">
             <div className="bg-gray-100 p-1 rounded-xl inline-flex w-full">
               <button
                 type="button"
-                onClick={() => setRole('passenger')}
+                onClick={() => { setRole('passenger'); setErrorMsg(''); }}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${
                   role === 'passenger' 
                     ? 'bg-white text-gray-900 shadow' 
@@ -131,7 +132,7 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
-                onClick={() => setRole('driver')}
+                onClick={() => { setRole('driver'); setErrorMsg(''); }}
                 className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${
                   role === 'driver' 
                     ? 'bg-white text-gray-900 shadow' 
@@ -142,6 +143,10 @@ export default function LoginPage() {
               </button>
             </div>
           </div>
+
+          <p className="-mt-4 mb-6 text-sm text-gray-600 text-center leading-relaxed relative z-10">
+            {role === 'passenger' ? t('authPassengerInfo') : t('authDriverInfo')}
+          </p>
 
           {errorMsg && (
             <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-md flex items-start gap-3">
@@ -163,7 +168,7 @@ export default function LoginPage() {
                   required
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  className="focus:ring-red-500 focus:border-red-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg py-3 bg-gray-50"
+                  className="border focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg py-3 bg-gray-50"
                   placeholder="contact@example.com"
                 />
               </div>
@@ -176,13 +181,22 @@ export default function LoginPage() {
                   <Key className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="focus:ring-red-500 focus:border-red-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg py-3 bg-gray-50"
+                  className="border focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500 block w-full pl-10 pr-11 sm:text-sm border-gray-300 rounded-lg py-3 bg-gray-50"
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+                  title={showPassword ? t('hidePassword') : t('showPassword')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-700"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
             </div>
 
@@ -194,7 +208,7 @@ export default function LoginPage() {
                   <select
                     value={vehicleType}
                     onChange={(e) => setVehicleType(e.target.value)}
-                    className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-lg bg-gray-50"
+                    className="mt-1 block w-full pl-3 pr-10 py-3 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500 sm:text-sm rounded-lg bg-gray-50"
                   >
                     <option value="bus">{t('authVehicleTypeBus')}</option>
                     <option value="auto">{t('authVehicleTypeAuto')}</option>
@@ -213,7 +227,7 @@ export default function LoginPage() {
                       required
                       value={rtoNumber}
                       onChange={(e) => setRtoNumber(e.target.value.toUpperCase())}
-                      className="focus:ring-red-500 focus:border-red-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg py-3 bg-gray-50 uppercase"
+                      className="border focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-lg py-3 bg-gray-50 uppercase"
                       placeholder="MH01AB1234"
                     />
                   </div>
@@ -221,18 +235,25 @@ export default function LoginPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">{t('authUploadDoc')}</label>
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 hover:bg-red-50 transition-colors cursor-pointer">
+                  <label htmlFor="file-upload" className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 hover:bg-red-50 hover:border-red-300 transition-colors cursor-pointer">
                     <div className="space-y-1 text-center">
                       <Upload className="mx-auto h-8 w-8 text-gray-400" />
                       <div className="flex text-sm text-gray-600 justify-center">
-                        <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-red-600 hover:text-red-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500 px-2 py-1">
-                          <span>Upload a file</span>
-                          <input id="file-upload" name="file-upload" type="file" className="sr-only" />
-                        </label>
+                        <span className="relative bg-white rounded-md font-medium text-red-600 px-2 py-1 max-w-[220px] truncate">
+                          {docName || t('uploadFile')}
+                        </span>
+                        <input
+                          id="file-upload"
+                          name="file-upload"
+                          type="file"
+                          accept=".png,.jpg,.jpeg,.pdf"
+                          className="sr-only"
+                          onChange={(e) => setDocName(e.target.files?.[0]?.name || '')}
+                        />
                       </div>
-                      <p className="text-xs text-gray-500">PNG, JPG, PDF up to 5MB</p>
+                      <p className="text-xs text-gray-500">{t('uploadHint')}</p>
                     </div>
-                  </div>
+                  </label>
                 </div>
               </div>
             )}
@@ -254,14 +275,14 @@ export default function LoginPage() {
             {mode === 'login' ? (
               <p>
                 {t('authNoAccount')}{' '}
-                <button onClick={() => setMode('register')} className="font-bold text-red-600 hover:text-red-500">
+                <button type="button" onClick={() => { setMode('register'); setErrorMsg(''); }} className="font-bold text-red-600 hover:text-red-500">
                   {t('authCreateOne')}
                 </button>
               </p>
             ) : (
               <p>
                 {t('authHasAccount')}{' '}
-                <button onClick={() => setMode('login')} className="font-bold text-red-600 hover:text-red-500">
+                <button type="button" onClick={() => { setMode('login'); setErrorMsg(''); }} className="font-bold text-red-600 hover:text-red-500">
                   {t('authLoginHere')}
                 </button>
               </p>

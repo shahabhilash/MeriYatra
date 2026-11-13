@@ -3,13 +3,43 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-[#EBEBDF] text-gray-900 antialiased;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-red-500 ring-offset-2 ring-offset-[#EBEBDF];
+  }
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply ring-0 ring-offset-0;
   }
 }
 
 @layer components {
   .glass-panel {
     @apply bg-white border border-gray-100 shadow-md rounded-2xl;
+  }
+}
+
+/* Custom Leaflet markers: no default box, crisp popups that match the cards */
+.mv-marker {
+  background: transparent;
+  border: none;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+.leaflet-container {
+  font-family: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

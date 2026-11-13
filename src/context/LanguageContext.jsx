@@ -1,18 +1,35 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { translations } from '../locales/translations';
+import { readStore, writeStore } from '../utils/geo';
 
 const LanguageContext = createContext();
+const STORAGE_KEY = 'meriyatra_lang';
 
 export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState('en'); // default to English
+  // Remember the chosen language across visits (defaults to English)
+  const [language, setLanguage] = useState(() => {
+    const saved = readStore(STORAGE_KEY, 'en');
+    return saved === 'hi' ? 'hi' : 'en';
+  });
+
+  useEffect(() => {
+    writeStore(STORAGE_KEY, language);
+    document.documentElement.lang = language;
+  }, [language]);
 
   const toggleLanguage = () => {
     setLanguage((prevLang) => (prevLang === 'en' ? 'hi' : 'en'));
   };
 
-  // Translation helper function
-  const t = (key) => {
-    return translations[language][key] || translations['en'][key] || key;
+  // Translation helper with optional {placeholder} replacement
+  const t = (key, vars) => {
+    let text = translations[language][key] || translations['en'][key] || key;
+    if (vars) {
+      Object.entries(vars).forEach(([k, v]) => {
+        text = text.replace(`{${k}}`, v);
+      });
+    }
+    return text;
   };
 
   return (

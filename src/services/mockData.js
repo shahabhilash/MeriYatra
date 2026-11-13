@@ -32,5 +32,5 @@ export const dummyRoutes = [
 ];
 
 export const dummyBuses = [
-  { id: 'BUS-101', routeId: 'R-2', route: 'VIT Campus Local Shuttle', status: 'On Time', eta: '5 min', occupancy: 'Low', lat: 23.0780, lng: 76.8520 }
+  { id: 'BUS-101', routeId: 'R-2', route: 'VIT Campus Local Shuttle', status: 'On Time', eta: '5 min', occupancy: 'Low', nextStop: 'VIT Bhopal Campus', lat: 23.0780, lng: 76.8520 }
 ];
